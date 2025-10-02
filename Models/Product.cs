@@ -14,7 +14,7 @@ namespace katsuCMS_backend.Models
         [Display(Name = "Product SKU")]
         public string ProductCode { get; set; } = string.Empty;
         [Display(Name = "Product Name")]
-        public string? ProductName { get; set; }
+        public string ProductName { get; set; } = string.Empty;
         [Display(Name = "Quantity")]
         public int Quantity { get; set; }
         [Display(Name = "Price")]
@@ -22,7 +22,7 @@ namespace katsuCMS_backend.Models
          public decimal Price { get; set; }
 
         [Display(Name = "Description")]
-        public string? Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
 
         /* FKS */

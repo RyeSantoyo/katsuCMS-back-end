@@ -87,13 +87,13 @@ namespace katsuCMS_backend.Controllers
             var exists = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
             if (exists == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Category not found." });
             }
 
             exists.CategoryName = dto.CategoryName;
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok( new { message = $"Category {id} updated successfully." });
         }
     }
 

@@ -13,6 +13,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<ApplicationDbContext>(ops => 
 ops.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+    policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // Replace with your front-end URL
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
@@ -34,7 +45,7 @@ if (app.Environment.IsDevelopment())
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     DbSeeder.Seed(context);
 }
-
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

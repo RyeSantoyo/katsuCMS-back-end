@@ -9,14 +9,11 @@ namespace katsuCMS_backend.Models
     public class StockPullOut
     {
         public int Id { get; set; }
-
-        [Required]
-        public int StoreId { get; set; }
+        public int? StoreId { get; set; }
         public Store? Store { get; set; }
-        public string? Reason { get; set; }
-
-        public DateTime PullOutDate { get; set; } = DateTime.Now;
-       // public ICollection<StockPullOutDetail> StockPullOutDetails { get; set; } = new List<StockPullOutDetail>();
-
+        [Required]
+        public string Reason { get; set; } = string.Empty;
+        public DateTime PullOutDate { get; set; }
+         public ICollection<StockPullOutDetail> StockPullOutDetails { get; set; } = new List<StockPullOutDetail>();
     }
 }

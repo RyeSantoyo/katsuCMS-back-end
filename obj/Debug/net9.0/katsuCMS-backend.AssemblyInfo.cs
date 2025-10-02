@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("katsuCMS-backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2b28930e88d5183a27ac316a2c55a2fec7d52a0c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e63335810b2145e1b29afb63290d46c38a2bb0f")]
 [assembly: System.Reflection.AssemblyProductAttribute("katsuCMS-backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("katsuCMS-backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

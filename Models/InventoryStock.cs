@@ -21,7 +21,7 @@ namespace katsuCMS_backend.Models
     public Unit Unit { get; set; } = null!;
 
     [Display(Name = "Current Quantity")]
-    public int Quantity { get; set; }
+    public decimal Quantity { get; set; }
 
     [Display(Name = "Reorder Level")]
     public int ReorderLevel { get; set; } = 0; // Minimum stock before triggering low-stock alert

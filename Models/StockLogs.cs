@@ -16,8 +16,10 @@ namespace katsuCMS_backend.Models
         public string Reason { get; set; } = string.Empty;
         public DateTime DateLogged { get; set; }
 
-        public int? UnitsId { get; set; }
+        public int? UnitId { get; set; }
         public Unit? Units { get; set; }
+        public int? InventoryStocksId { get; set; }
+        public InventoryStock? InventoryStocks { get; set; }
 
         public string? Receiver { get; set; }
 

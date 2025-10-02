@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using katsuCMS_backend.Models;
-using katsuCMS_backend.Models.DTO.Unit;
+using katsuCMS_backend.Models.DTO.Units;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
