@@ -19,5 +19,8 @@ namespace katsuCMS_backend.Models.DTO.Product
         public string SupplierName { get; set; } = string.Empty;
         public int UnitId { get; set; }
         public string UnitName { get; set; } = string.Empty;
+
+        public List<int> SupplierIds { get; set; } = new();
+        public List<string> SupplierNames { get; set; } = new();
     }
 }

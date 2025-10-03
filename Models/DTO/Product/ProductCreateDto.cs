@@ -14,6 +14,14 @@ namespace katsuCMS_backend.Models.DTO.Product
         public int CategoryId { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }
-        public string Description { get; set; } = string.Empty;       
+        public string Description { get; set; } = string.Empty;
+        public List<int> SupplierIds { get; set; } = new();
+        public List<string> SupplierNames { get; set; } = new();
+    }
+    
+
+    public class ProductUpdateDto : ProductCreateDto
+    {
+        // Inherits all properties from ProductCreateDto
     }
 }

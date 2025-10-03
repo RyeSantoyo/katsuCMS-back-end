@@ -78,11 +78,14 @@ namespace katsuCMS_backend.Controllers
                 ProductCode = dto.ProductCode,
                 ProductName = dto.ProductName,
                 UnitId = dto.UnitId,
-                SupplierId = dto.SupplierId,
                 CategoryId = dto.CategoryId,
                 Quantity = dto.Quantity,
                 Price = dto.Price,
-                Description = dto.Description
+                Description = dto.Description,
+                ProductSuppliers = dto.SupplierIds.Select(supplierId => new ProductSupplier
+                {
+                    SupplierId = supplierId
+                }).ToList()
             };
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
@@ -98,11 +101,12 @@ namespace katsuCMS_backend.Controllers
                 SupplierName = p.Supplier.SupplierName,
                 CategoryName = p.Category.CategoryName,
                 UnitId = p.UnitId,
-                SupplierId = p.SupplierId,
                 CategoryId = p.CategoryId,
                 Quantity = p.Quantity,
                 Price = p.Price,
-                Description = p.Description
+                Description = p.Description,
+                SupplierIds = p.ProductSuppliers.Select(ps => ps.SupplierId).ToList(),
+                SupplierNames = p.ProductSuppliers.Select(ps => ps.Supplier.SupplierName).ToList()
             }).FirstOrDefaultAsync();
             return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, result);
         }
@@ -123,7 +127,7 @@ namespace katsuCMS_backend.Controllers
                 return BadRequest($"Unit with ID {dto.UnitId} does not exist.");
             }
 
-            product.ProductCode = dto.ProductCode;
+           //product.ProductCode = dto.ProductCode;
             product.ProductName = dto.ProductName;
             product.UnitId = dto.UnitId;
             product.SupplierId = dto.SupplierId;
@@ -139,7 +143,7 @@ namespace katsuCMS_backend.Controllers
             .Select(p => new ProductDto
             {
                 Id = product.Id,
-                ProductCode = p.ProductCode,
+                //ProductCode = p.ProductCode,
                 ProductName = p.ProductName,
                 UnitName = p.Unit.UnitName,
                 SupplierName = p.Supplier.SupplierName,

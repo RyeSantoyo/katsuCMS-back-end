@@ -37,7 +37,7 @@ namespace katsuCMS_backend.Models
         public int UnitId { get; set; }
         public Unit Unit { get; set; } = null!;
 
-        // public List<ProductSupplier> ProductSuppliers { get; set; } = new List<ProductSupplier>();
+         public List<ProductSupplier> ProductSuppliers { get; set; } = new List<ProductSupplier>();
 
         // public ICollection<PurchaseOrderDetail>? PurchaseOrderDetails { get; set; } = new List<PurchaseOrderDetail>();
 

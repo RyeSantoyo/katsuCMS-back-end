@@ -21,6 +21,7 @@ namespace katsuCMS_backend.Models
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Store> Stores { get; set; }
         public DbSet<InventoryStock> InventoryStocks { get; set; }
+        public DbSet<ProductSupplier> ProductSuppliers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,6 +44,22 @@ namespace katsuCMS_backend.Models
                 .WithMany(u => u.Products)
                 .HasForeignKey(p => p.UnitId)
                 .OnDelete(DeleteBehavior.Restrict);
+            //Product Supplier Many-to-Many
+            modelBuilder.Entity<ProductSupplier>()
+                .HasKey(ps => new { ps.ProductId, ps.SupplierId });
+
+            modelBuilder.Entity<ProductSupplier>()
+                .HasOne(ps => ps.Product)
+                .WithMany(p => p.ProductSuppliers)
+                .HasForeignKey(ps => ps.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProductSupplier>()
+                .HasOne(ps => ps.Supplier)
+                .WithMany(s => s.ProductSuppliers)
+                .HasForeignKey(ps => ps.SupplierId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }
