@@ -10,7 +10,7 @@ namespace katsuCMS_backend.Models.DTO.Product
         public string ProductCode { get; set; } = string.Empty;
         public string ProductName { get; set; } = string.Empty;
         public int UnitId { get; set; }
-        public int SupplierId { get; set; }
+        // public int SupplierId { get; set; }
         public int CategoryId { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }
@@ -18,10 +18,12 @@ namespace katsuCMS_backend.Models.DTO.Product
         public List<int> SupplierIds { get; set; } = new();
         public List<string> SupplierNames { get; set; } = new();
     }
-    
+
 
     public class ProductUpdateDto : ProductCreateDto
     {
+        
+        public int Id { get; set; }
         // Inherits all properties from ProductCreateDto
     }
 }

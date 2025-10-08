@@ -12,7 +12,7 @@ namespace katsuCMS_backend.Models
         public string Address { get; set; } = string.Empty;
         public string ContactNumber { get; set; } = string.Empty;
 
-        public ICollection<Product> Products { get; set; } = new List<Product>();
+        //public ICollection<Product> Products { get; set; } = new List<Product>();
 
         public ICollection<ProductSupplier> ProductSuppliers { get; set; } = new List<ProductSupplier>();
         // public ICollection<PurchaseOrder> PurchaseOrders { get; set; };

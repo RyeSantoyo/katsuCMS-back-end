@@ -33,17 +33,18 @@ namespace katsuCMS_backend.Models
                 .HasForeignKey(p => p.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Product>()
-                .HasOne(p => p.Supplier)
-                .WithMany(s => s.Products)
-                .HasForeignKey(p => p.SupplierId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // modelBuilder.Entity<Product>()
+            //     .HasOne(p => p.Supplier)
+            //     .WithMany(s => s.Products)
+            //     .HasForeignKey(p => p.SupplierId)
+            //     .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Unit)
                 .WithMany(u => u.Products)
                 .HasForeignKey(p => p.UnitId)
                 .OnDelete(DeleteBehavior.Restrict);
+           
             //Product Supplier Many-to-Many
             modelBuilder.Entity<ProductSupplier>()
                 .HasKey(ps => new { ps.ProductId, ps.SupplierId });
@@ -51,14 +52,13 @@ namespace katsuCMS_backend.Models
             modelBuilder.Entity<ProductSupplier>()
                 .HasOne(ps => ps.Product)
                 .WithMany(p => p.ProductSuppliers)
-                .HasForeignKey(ps => ps.ProductId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(ps => ps.ProductId);
 
             modelBuilder.Entity<ProductSupplier>()
                 .HasOne(ps => ps.Supplier)
                 .WithMany(s => s.ProductSuppliers)
-                .HasForeignKey(ps => ps.SupplierId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(ps => ps.SupplierId);
+
 
         }
     }

@@ -30,8 +30,8 @@ namespace katsuCMS_backend.Models
         public int CategoryId { get; set; }
         public ProductCategory Category { get; set; } = null!;
 
-        public int SupplierId { get; set; }
-        public Supplier Supplier { get; set; } = null!;
+        // public int SupplierId { get; set; }
+        // public Supplier Supplier { get; set; } = null!;
 
         [ForeignKey("UnitId")]
         public int UnitId { get; set; }

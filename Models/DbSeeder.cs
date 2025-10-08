@@ -67,7 +67,10 @@ namespace katsuCMS_backend.Models
                         Description = "Fresh chicken breast",
                         CategoryId = cat.Id,
                         UnitId = unitPiece.Id,
-                        SupplierId = supplier.Id
+                        ProductSuppliers = new List<ProductSupplier>
+                        {
+                            new ProductSupplier { SupplierId = supplier.Id }
+                        }
                     },
                     new Product
                     {
@@ -78,7 +81,10 @@ namespace katsuCMS_backend.Models
                         Description = "Fresh chicken thigh",
                         CategoryId = cat.Id,
                         UnitId = unitPiece.Id,
-                        SupplierId = supplier.Id  
+                                                ProductSuppliers = new List<ProductSupplier>
+                        {
+                            new ProductSupplier { SupplierId = supplier.Id }
+                        }
                     },
                     new Product
                     {
@@ -89,7 +95,10 @@ namespace katsuCMS_backend.Models
                         Description = "Fresh chicken Neck",
                         CategoryId = cat.Id,
                         UnitId = unitPiece.Id,
-                        SupplierId = supplier.Id  
+                                                ProductSuppliers = new List<ProductSupplier>
+                        {
+                            new ProductSupplier { SupplierId = supplier.Id }
+                        }
                     }
                 );
                 context.SaveChanges();
