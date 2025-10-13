@@ -24,7 +24,7 @@ namespace katsuCMS_backend.Models
     public decimal Quantity { get; set; }
 
     [Display(Name = "Reorder Level")]
-    public int ReorderLevel { get; set; } = 0; // Minimum stock before triggering low-stock alert
+    public decimal ReorderLevel { get; set; } = 0; // Minimum stock before triggering low-stock alert
 
     [Display(Name = "Last Updated")]
     public DateTime LastUpdated { get; set; } = DateTime.Now;

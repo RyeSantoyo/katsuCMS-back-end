@@ -58,8 +58,28 @@ namespace katsuCMS_backend.Models
                 .HasOne(ps => ps.Supplier)
                 .WithMany(s => s.ProductSuppliers)
                 .HasForeignKey(ps => ps.SupplierId);
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.InventoryStocks)
+                .WithOne(i=>i.Product)
+                .HasForeignKey(i => i.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            //Inventory Stock
+            modelBuilder.Entity<InventoryStock>(entity =>
+            {
+                entity.HasIndex(e => e.Id);
+                entity.HasOne(e => e.Product)
+                .WithMany(p => p.InventoryStocks)
+                .HasForeignKey(e => e.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-
+                entity.HasOne(e => e.Unit)
+                      .WithMany()
+                        .HasForeignKey(e => e.UnitId)
+                        .OnDelete(DeleteBehavior.Restrict);
+                entity.Property(e => e.Quantity).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.ReorderLevel).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.LastUpdated).HasDefaultValueSql("GETDATE()");            
+            });
         }
     }
 }

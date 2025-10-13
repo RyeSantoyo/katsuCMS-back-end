@@ -24,21 +24,25 @@ namespace katsuCMS_backend.Models
         [Display(Name = "Description")]
         public string Description { get; set; } = string.Empty;
 
-
+        public decimal? ReoderLevel { get; set; }
+        public decimal? PreferredStockLevel { get; set; }
+        public ICollection<InventoryStock>? InventoryStocks { get; set; }
         /* FKS */
         [ForeignKey("CategoryId")]
         public int CategoryId { get; set; }
         public ProductCategory Category { get; set; } = null!;
 
-        // public int SupplierId { get; set; }
-        // public Supplier Supplier { get; set; } = null!;
+
 
         [ForeignKey("UnitId")]
         public int UnitId { get; set; }
         public Unit Unit { get; set; } = null!;
 
-         public List<ProductSupplier> ProductSuppliers { get; set; } = new List<ProductSupplier>();
+        public List<ProductSupplier> ProductSuppliers { get; set; } = new List<ProductSupplier>();
+         
 
+        // public int SupplierId { get; set; }
+        // public Supplier Supplier { get; set; } = null!;
         // public ICollection<PurchaseOrderDetail>? PurchaseOrderDetails { get; set; } = new List<PurchaseOrderDetail>();
 
         // public int? UnitConversionId { get; set; }
