@@ -34,7 +34,6 @@ namespace katsuCMS_backend.Controllers
                 Id = p.Id,
                 ProductCode = p.ProductCode,
                 ProductName = p.ProductName,
-                Quantity = p.Quantity,
                 Price = p.Price,
                 Description = p.Description,
                 CategoryId = p.CategoryId,
@@ -108,7 +107,6 @@ namespace katsuCMS_backend.Controllers
                 Id = products.Id,
                 ProductCode = products.ProductCode,
                 ProductName = products.ProductName,
-                Quantity = products.Quantity,
                 Price = products.Price,
                 Description = products.Description,
                 CategoryId = products.CategoryId,
@@ -131,7 +129,6 @@ namespace katsuCMS_backend.Controllers
                 ProductName = dto.ProductName,
                 UnitId = dto.UnitId,
                 CategoryId = dto.CategoryId,
-                Quantity = dto.Quantity,
                 Price = dto.Price,
                 Description = dto.Description,
                 ProductSuppliers = dto.SupplierIds.Select(supplierId => new ProductSupplier
@@ -154,7 +151,6 @@ namespace katsuCMS_backend.Controllers
                 UnitId = p.UnitId,
                 // SupplierId = p.SupplierId,
                 CategoryId = p.CategoryId,
-                Quantity = p.Quantity,
                 Price = p.Price,
                 Description = p.Description,
                 SupplierIds = p.ProductSuppliers.Select(ps => ps.SupplierId).ToList(),
@@ -177,7 +173,6 @@ namespace katsuCMS_backend.Controllers
             product.ProductName = dto.ProductName;
             product.UnitId = dto.UnitId;
             product.CategoryId = dto.CategoryId;
-            product.Quantity = dto.Quantity;
             product.Price = dto.Price;
             product.Description = dto.Description;
 
@@ -205,7 +200,6 @@ namespace katsuCMS_backend.Controllers
                 CategoryName = p.Category.CategoryName,
                 UnitId = p.UnitId,
                 CategoryId = p.CategoryId,
-                Quantity = p.Quantity,
                 Price = p.Price,
                 Description = p.Description,
                 SupplierIds = p.ProductSuppliers.Select(ps => ps.SupplierId).ToList(),

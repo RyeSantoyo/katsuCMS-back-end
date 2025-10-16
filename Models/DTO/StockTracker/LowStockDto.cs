@@ -12,6 +12,7 @@ namespace katsuCMS_backend.Models.DTO.StockTracker
         public string UnitName { get; set; } = string.Empty;
         public decimal Quantity { get; set; }
         public decimal? ReorderLevel { get; set; }
+        public DateTime LastUpdated { get; set; } = DateTime.Now;
         public bool IsLowstock => Quantity < (ReorderLevel ?? 0);
     }
 }

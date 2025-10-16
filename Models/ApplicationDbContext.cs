@@ -58,6 +58,7 @@ namespace katsuCMS_backend.Models
                 .HasOne(ps => ps.Supplier)
                 .WithMany(s => s.ProductSuppliers)
                 .HasForeignKey(ps => ps.SupplierId);
+                
             modelBuilder.Entity<Product>()
                 .HasMany(p => p.InventoryStocks)
                 .WithOne(i=>i.Product)
@@ -76,7 +77,7 @@ namespace katsuCMS_backend.Models
                       .WithMany()
                         .HasForeignKey(e => e.UnitId)
                         .OnDelete(DeleteBehavior.Restrict);
-                entity.Property(e => e.Quantity).HasColumnType("decimal(18,2)");
+                //entity.Property(e => e.Quantity).HasColumnType("decimal(18,2)");
                 entity.Property(e => e.ReorderLevel).HasColumnType("decimal(18,2)");
                 entity.Property(e => e.LastUpdated).HasDefaultValueSql("GETDATE()");            
             });

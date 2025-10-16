@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,12 +22,21 @@ namespace katsuCMS_backend.Models
     public Unit Unit { get; set; } = null!;
 
     [Display(Name = "Current Quantity")]
-    public decimal Quantity { get; set; }
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Quantity { get; set; } = 0;
 
     [Display(Name = "Reorder Level")]
-    public decimal ReorderLevel { get; set; } = 0; // Minimum stock before triggering low-stock alert
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal ReorderLevel { get; set; } = 0;
 
+    [Display(Name = "Preferred Stock Level")]
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal PreferredStockLevel { get; set; } = 0;
+
+        // 🕓 Timestamp
     [Display(Name = "Last Updated")]
     public DateTime LastUpdated { get; set; } = DateTime.Now;
+    public ICollection<StockLogs>? StockLogs { get; set; }
+
     }
 }

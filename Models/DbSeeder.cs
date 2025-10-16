@@ -57,50 +57,50 @@ namespace katsuCMS_backend.Models
                 var supplier = context.Suppliers.First(s => s.SupplierName == "Foster Foods DP");
                 var store = context.Stores.First(s => s.Name == "SM Megamall");
 
-                context.Products.AddRange(
-                    new Product
-                    {
-                        ProductCode = "A001",
-                        ProductName = "Chicken Breast",
-                        Quantity = 100,
-                        Price = 150.00m,
-                        Description = "Fresh chicken breast",
-                        CategoryId = cat.Id,
-                        UnitId = unitPiece.Id,
-                        ProductSuppliers = new List<ProductSupplier>
-                        {
-                            new ProductSupplier { SupplierId = supplier.Id }
-                        }
-                    },
-                    new Product
-                    {
-                        ProductCode = "A002",
-                        ProductName = "Chicken Thigh",
-                        Quantity = 200,
-                        Price = 120.00m,
-                        Description = "Fresh chicken thigh",
-                        CategoryId = cat.Id,
-                        UnitId = unitPiece.Id,
-                                                ProductSuppliers = new List<ProductSupplier>
-                        {
-                            new ProductSupplier { SupplierId = supplier.Id }
-                        }
-                    },
-                    new Product
-                    {
-                        ProductCode = "A003",
-                        ProductName = "Chicken Neck",
-                        Quantity = 50,
-                        Price = 70.00m,
-                        Description = "Fresh chicken Neck",
-                        CategoryId = cat.Id,
-                        UnitId = unitPiece.Id,
-                                                ProductSuppliers = new List<ProductSupplier>
-                        {
-                            new ProductSupplier { SupplierId = supplier.Id }
-                        }
-                    }
-                );
+                // context.Products.AddRange(
+                //     new Product
+                //     {
+                //         ProductCode = "A001",
+                //         ProductName = "Chicken Breast",
+                //         Quantity = 100,
+                //         Price = 150.00m,
+                //         Description = "Fresh chicken breast",
+                //         CategoryId = cat.Id,
+                //         UnitId = unitPiece.Id,
+                //         ProductSuppliers = new List<ProductSupplier>
+                //         {
+                //             new ProductSupplier { SupplierId = supplier.Id }
+                //         }
+                //     },
+                //     new Product
+                //     {
+                //         ProductCode = "A002",
+                //         ProductName = "Chicken Thigh",
+                //         Quantity = 200,
+                //         Price = 120.00m,
+                //         Description = "Fresh chicken thigh",
+                //         CategoryId = cat.Id,
+                //         UnitId = unitPiece.Id,
+                //                                 ProductSuppliers = new List<ProductSupplier>
+                //         {
+                //             new ProductSupplier { SupplierId = supplier.Id }
+                //         }
+                //     },
+                //     new Product
+                //     {
+                //         ProductCode = "A003",
+                //         ProductName = "Chicken Neck",
+                //         Quantity = 50,
+                //         Price = 70.00m,
+                //         Description = "Fresh chicken Neck",
+                //         CategoryId = cat.Id,
+                //         UnitId = unitPiece.Id,
+                //                                 ProductSuppliers = new List<ProductSupplier>
+                //         {
+                //             new ProductSupplier { SupplierId = supplier.Id }
+                //         }
+                //     }
+                // );
                 context.SaveChanges();
             }
         }

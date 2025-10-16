@@ -15,6 +15,7 @@ namespace katsuCMS_backend.Models
         //public ICollection<Product> Products { get; set; } = new List<Product>();
 
         public ICollection<ProductSupplier> ProductSuppliers { get; set; } = new List<ProductSupplier>();
+        public ICollection<InventoryStock>? InventoryStocks { get; set; }
         // public ICollection<PurchaseOrder> PurchaseOrders { get; set; };
     }
 }

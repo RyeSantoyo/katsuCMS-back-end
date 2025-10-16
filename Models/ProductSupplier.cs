@@ -17,5 +17,6 @@ namespace katsuCMS_backend.Models
 
         [JsonIgnore]
         public Supplier Supplier { get; set; } = null!;
+
     }
 }

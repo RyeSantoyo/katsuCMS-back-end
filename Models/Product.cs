@@ -15,8 +15,8 @@ namespace katsuCMS_backend.Models
         public string ProductCode { get; set; } = string.Empty;
         [Display(Name = "Product Name")]
         public string ProductName { get; set; } = string.Empty;
-        [Display(Name = "Quantity")]
-        public int Quantity { get; set; }
+        // [Display(Name = "Quantity")]
+        // public int Quantity { get; set; }
         [Display(Name = "Price")]
         [Column(TypeName = "decimal(18,2)")]
          public decimal Price { get; set; }
@@ -24,22 +24,19 @@ namespace katsuCMS_backend.Models
         [Display(Name = "Description")]
         public string Description { get; set; } = string.Empty;
 
-        public decimal? ReoderLevel { get; set; }
-        public decimal? PreferredStockLevel { get; set; }
-        public ICollection<InventoryStock>? InventoryStocks { get; set; }
+        // public decimal? ReoderLevel { get; set; }
+        // public decimal? PreferredStockLevel { get; set; }
         /* FKS */
         [ForeignKey("CategoryId")]
         public int CategoryId { get; set; }
         public ProductCategory Category { get; set; } = null!;
-
-
 
         [ForeignKey("UnitId")]
         public int UnitId { get; set; }
         public Unit Unit { get; set; } = null!;
 
         public List<ProductSupplier> ProductSuppliers { get; set; } = new List<ProductSupplier>();
-         
+        public ICollection<InventoryStock>? InventoryStocks { get; set; }
 
         // public int SupplierId { get; set; }
         // public Supplier Supplier { get; set; } = null!;
