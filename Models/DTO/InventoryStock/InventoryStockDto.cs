@@ -12,6 +12,7 @@ namespace katsuCMS_backend.Models.DTO.InventoryStock
         public string ProductCode { get; set; } = string.Empty;
         public string ProductName { get; set; } = string.Empty;
         public string UnitName { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
         public decimal Quantity { get; set; }
         public decimal ReorderLevel { get; set; }
         public decimal PreferredStockLevel { get; set; }

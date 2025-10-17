@@ -49,7 +49,7 @@ namespace katsuCMS_backend.Controllers
         }
     
         [HttpPost("AddStock")]
-        public async Task<IActionResult> AddStock([FromBody] InventoryStockCreateDto dto)
+        public async Task<ActionResult<InventoryStockDto>> AddStock([FromBody] InventoryStockCreateDto dto)
         {
             var stock = new InventoryStock
             {
@@ -58,21 +58,44 @@ namespace katsuCMS_backend.Controllers
                 Quantity = dto.Quantity,
                 ReorderLevel = dto.ReorderLevel,
                 PreferredStockLevel = dto.PreferredStockLevel,
-            
                 LastUpdated = DateTime.Now
             };
             _context.InventoryStocks.Add(stock);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetLowStock), new { id = stock.Id }, stock);
+
+            var result = await _context.InventoryStocks
+                                        .Include(i=> i.Product)
+                                            .ThenInclude(i=> i.Category)
+                                        .Include(i=> i.Product.Unit)
+                                        .Include(i=> i.Product.ProductSuppliers)
+                                            .ThenInclude(i=> i.Supplier)
+                                       .Where(i => i.Id == stock.Id)    
+                                       .Select(p => new InventoryStockDto
+            {
+                Id = p.Id,
+                ProductCode = p.Product.ProductCode,
+                ProductName = p.Product.ProductName,
+                Category = p.Product.Category.CategoryName,
+                UnitName = p.Product.Unit.UnitName,
+                Quantity = p.Quantity,
+                ReorderLevel = p.ReorderLevel,
+                PreferredStockLevel = p.PreferredStockLevel,
+                LastUpdated = p.LastUpdated,
+                SupplierNames = p.Product.ProductSuppliers.Select(ps=> ps.Supplier.SupplierName).ToList()
+            }).FirstOrDefaultAsync();   
+
+            return CreatedAtAction(nameof(GetLowStock), new { id = stock.Id }, result);
         }
 
         [HttpPut("UpdateReorderLevel/{id}")]
-        public async Task<IActionResult> UpdateReorderLevel(int id, [FromBody] InventoryStockUpdateDto dto)
+        public async Task<IActionResult> UpdateReorderLevel(int id, [FromBody] InventoryUpdateDto dto)
         {
             var stock = await _context.InventoryStocks.FindAsync(id);
             if (stock == null) return NotFound();
-
-            stock.ReorderLevel = dto.ReorderLevel ?? stock.ReorderLevel;
+            
+            
+            stock.Quantity = dto.Quantity;
+            stock.ReorderLevel = dto.ReorderLevel != 0 ? dto.ReorderLevel : stock.ReorderLevel;
             stock.LastUpdated = DateTime.Now;
 
             await _context.SaveChangesAsync();
