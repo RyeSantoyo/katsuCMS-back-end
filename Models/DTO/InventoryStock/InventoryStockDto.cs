@@ -16,7 +16,9 @@ namespace katsuCMS_backend.Models.DTO.InventoryStock
         public decimal Quantity { get; set; }
         public decimal ReorderLevel { get; set; }
         public decimal PreferredStockLevel { get; set; }
-        public bool IsLowstock { get; set; } 
+        public bool IsLowstock { get; set; }
+        public decimal Price { get; set; }
+        public decimal InventoryValue { get; set; } 
         public DateTime LastUpdated { get; set; } = DateTime.Now;
         public List<string> SupplierNames { get; set; } = new();
     }

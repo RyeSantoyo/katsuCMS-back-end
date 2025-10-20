@@ -21,7 +21,7 @@ namespace katsuCMS_backend.Controllers
             _context = context;
         }
 
-        [HttpGet("stocks")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<InventoryStockDto>>> GetCurrentStock()
         {
             var stocks = await _context.InventoryStocks
@@ -42,6 +42,8 @@ namespace katsuCMS_backend.Controllers
                                         ReorderLevel = i.ReorderLevel,
                                         PreferredStockLevel = i.PreferredStockLevel,
                                         IsLowstock = i.Quantity < i.ReorderLevel,
+                                        Price = i.Product.Price,
+                                        InventoryValue = i.Product.Price * i.Quantity,
                                         LastUpdated = i.LastUpdated,
                                         SupplierNames = i.Product.ProductSuppliers.Select(ps => ps.Supplier.SupplierName).ToList()
                                     }).ToListAsync();
