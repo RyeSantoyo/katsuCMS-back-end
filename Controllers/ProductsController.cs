@@ -208,6 +208,19 @@ namespace katsuCMS_backend.Controllers
 
             return Ok(result);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> RemoveProduct(int id)
+        {
+            var prod = await _context.Products.FindAsync(id);
+
+            if (prod == null) return NotFound( new {message = "Product not found."});
+
+            _context.Products.Remove(prod);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"Product {prod.ProductName} removed" });
+        }
     }
 }
     

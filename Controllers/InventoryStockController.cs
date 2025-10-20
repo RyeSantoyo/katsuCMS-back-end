@@ -21,6 +21,33 @@ namespace katsuCMS_backend.Controllers
             _context = context;
         }
 
+        [HttpGet("stocks")]
+        public async Task<ActionResult<IEnumerable<InventoryStockDto>>> GetCurrentStock()
+        {
+            var stocks = await _context.InventoryStocks
+                                    .Include(i => i.Product)
+                                    .Include(i => i.Product.ProductSuppliers)
+                                        .ThenInclude(ps => ps.Supplier)
+                                    .Include(i => i.Unit)
+                                    .Include(i=>i.Product.Category)
+                                    .Select(i => new InventoryStockDto
+                                    {
+                                        Id = i.Id,
+                                        ProductId = i.ProductId,
+                                        ProductCode = i.Product.ProductCode,
+                                        ProductName = i.Product.ProductName,
+                                        Category = i.Product.Category.CategoryName,
+                                        UnitName = i.Unit.UnitName,
+                                        Quantity = i.Quantity,
+                                        ReorderLevel = i.ReorderLevel,
+                                        PreferredStockLevel = i.PreferredStockLevel,
+                                        IsLowstock = i.Quantity < i.ReorderLevel,
+                                        LastUpdated = i.LastUpdated,
+                                        SupplierNames = i.Product.ProductSuppliers.Select(ps => ps.Supplier.SupplierName).ToList()
+                                    }).ToListAsync();
+
+            return Ok(stocks);
+        }
 
         [HttpGet("LowStock")]
         public async Task<ActionResult<IEnumerable<InventoryStockDto>>> GetLowStock()
@@ -30,12 +57,14 @@ namespace katsuCMS_backend.Controllers
                 .Include(i => i.Product.ProductSuppliers)
                     .ThenInclude(ps => ps.Supplier)
                 .Include(i => i.Unit)
+                .Include(i=> i.Product.Category)
                 .Where(i => i.Quantity < i.ReorderLevel)
                 .Select(i => new InventoryStockDto
                 {
                     ProductId = i.ProductId,
                     ProductCode = i.Product.ProductCode,
                     ProductName = i.Product.ProductName,
+                    Category = i.Product.Category.CategoryName,
                     UnitName = i.Unit.UnitName,
                     Quantity = i.Quantity,
                     ReorderLevel = i.ReorderLevel,
@@ -88,7 +117,7 @@ namespace katsuCMS_backend.Controllers
         }
 
         [HttpPut("UpdateReorderLevel/{id}")]
-        public async Task<IActionResult> UpdateReorderLevel(int id, [FromBody] InventoryStockUpdateDto dto)
+        public async Task<ActionResult> UpdateReorderLevel(int id, [FromBody] InventoryStockUpdateDto dto)
         {
             var stock = await _context.InventoryStocks.FindAsync(id);
             if (stock == null) return NotFound();
@@ -110,10 +139,21 @@ namespace katsuCMS_backend.Controllers
                 stock.Quantity,
                 stock.ReorderLevel,
                 stock.LastUpdated,
-                stock.PreferredStockLevel 
+                stock.PreferredStockLevel
             });
+        }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult>DeleteStockController(int id)
+        {
+            var stock = await _context.InventoryStocks.FindAsync(id);
 
+            if (stock == null) return NoContent();
+
+            _context.InventoryStocks.Remove(stock);
+            await _context.SaveChangesAsync();
+
+            return Ok(new {message = $"{stock.Product.ProductName} have been removed"});
         }
     }
 }
