@@ -14,8 +14,12 @@ namespace katsuCMS_backend.Models.DTO.InventoryStock
         public decimal PreferredStockLevel { get; set; }
     }
 
-    public class InventoryUpdateDto : InventoryStockCreateDto
-    {
-        public int Id { get; set; }
-    }
+    // public class InventoryUpdateDto : InventoryStockCreateDto
+    // {
+    //     public int Id { get; set; }
+    //     public decimal? Quantity { get; set; }
+    //     public decimal? ReorderLevel { get; set; }
+    //     public new decimal? PreferredStockLevel { get; set; }
+
+    // }
 }

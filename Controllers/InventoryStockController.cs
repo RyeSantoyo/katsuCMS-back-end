@@ -88,18 +88,32 @@ namespace katsuCMS_backend.Controllers
         }
 
         [HttpPut("UpdateReorderLevel/{id}")]
-        public async Task<IActionResult> UpdateReorderLevel(int id, [FromBody] InventoryUpdateDto dto)
+        public async Task<IActionResult> UpdateReorderLevel(int id, [FromBody] InventoryStockUpdateDto dto)
         {
             var stock = await _context.InventoryStocks.FindAsync(id);
             if (stock == null) return NotFound();
-            
-            
-            stock.Quantity = dto.Quantity;
-            stock.ReorderLevel = dto.ReorderLevel != 0 ? dto.ReorderLevel : stock.ReorderLevel;
+
+            if (dto.Quantity.HasValue) stock.Quantity = dto.Quantity.Value;
+
+            if (dto.ReorderLevel.HasValue) stock.ReorderLevel = dto.ReorderLevel.Value;
+
+            if (dto.PreferredStockLevel.HasValue) stock.PreferredStockLevel = dto.PreferredStockLevel.Value;
+
             stock.LastUpdated = DateTime.Now;
 
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            return Ok(new
+            {
+                stock.Id,
+                stock.ProductId,
+                stock.Quantity,
+                stock.ReorderLevel,
+                stock.LastUpdated,
+                stock.PreferredStockLevel 
+            });
+
+
         }
     }
 }
