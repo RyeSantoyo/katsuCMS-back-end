@@ -22,6 +22,7 @@ namespace katsuCMS_backend.Models
         public DbSet<Store> Stores { get; set; }
         public DbSet<InventoryStock> InventoryStocks { get; set; }
         public DbSet<ProductSupplier> ProductSuppliers { get; set; }
+        public DbSet<StockAdjustments> StockAdjustments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
