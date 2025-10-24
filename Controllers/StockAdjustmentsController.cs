@@ -21,7 +21,7 @@ namespace katsuCMS_backend.Controllers
             _context = context;
         }
 
-        [HttpGet("StockAdjustment")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<StockAdjustmentsDto>>> GetAdjustments()
         {
             var adjustments = await _context.StockAdjustments
