@@ -21,59 +21,62 @@ namespace katsuCMS_backend.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<StockAdjustmentsDto>>> GetAdjustments()
+[HttpGet]
+public async Task<ActionResult<IEnumerable<StockAdjustmentsDto>>> GetAdjustments()
+{
+    var adjustments = await _context.StockAdjustments
+        .Include(a => a.InventoryStock)
+            .ThenInclude(p => p!.Product)
+        .Include(a => a.InventoryStock!.Unit)
+        .Select(a => new StockAdjustmentsDto
         {
-            var adjustments = await _context.StockAdjustments
-                                    .Include(a => a.InventoryStock)
-                                        .ThenInclude(p => p.Product)
-                                    .Include(a => a.InventoryStock.Unit)
-                                    .Select(a => new StockAdjustmentsDto
-                                    {
-                                        Id = a.Id,
-                                        ProductName = a.InventoryStock.Product.ProductName,
-                                        UnitName = a.InventoryStock.Unit.UnitName,
-                                        PreviousQuantity = a.PreviousQuantity,
-                                        AdjustedQuantity = a.AdjustedQuantity,
-                                        AdjustmentType = a.AdjustmentType,
-                                        Reason = a.Reason,
-                                        AdjustmentDate = a.AdjustmentDate
-                                    }).ToListAsync();
+            Id = a.Id,
+            ProductName = a.InventoryStock!.Product!.ProductName,
+            UnitName = a.InventoryStock!.Unit!.UnitName,
+            PreviousQuantity = a.PreviousQuantity,
+            AdjustedQuantity = a.AdjustedQuantity,
+            AdjustmentType = a.AdjustmentType,
+            Reason = a.Reason,
+            AdjustmentDate = a.AdjustmentDate
+        })
+        .ToListAsync();
 
-            return Ok(adjustments);
-        }
+    return Ok(adjustments);
+}
 
         [HttpPost]
-
-        public async Task<IActionResult> CreateAdjustments([FromBody] StockAdjustments dto)
+        public async Task<IActionResult> CreateAdjustments([FromBody] StockAdjustmentsCreateDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var stock = await _context.InventoryStocks
-                .Include(s => s.Product)
-                .Include(s => s.Unit)
-                .FirstOrDefaultAsync(s => s.Id == dto.InventoryStockId);
+            var inventoryStock = await _context.InventoryStocks.FindAsync(dto.InventoryStockId);
+            if (inventoryStock == null)
+                return NotFound("Inventory stock not found.");
 
-            if (stock == null) return NotFound("Not Found");
+            var product = await _context.Products.FindAsync(inventoryStock.ProductId);
+            if (product == null)
+                return NotFound("Product not found.");
 
-            var adjustments = new StockAdjustments
+            var adjustment = new StockAdjustments
             {
                 InventoryStockId = dto.InventoryStockId,
-                PreviousQuantity = dto.PreviousQuantity,
+                InventoryStock = inventoryStock,
+                ProductId = product.Id,
+                Product = product,
+                AdjustmentType = dto.AdjustmentType,
                 AdjustedQuantity = dto.AdjustedQuantity,
                 Reason = dto.Reason,
-                AdjustmentDate = dto.AdjustmentDate,
-                AdjustmentType = dto.AdjustmentType,
+                PreviousQuantity = inventoryStock.Quantity,
+                AdjustmentDate = DateTime.Now
             };
 
-            stock.Quantity = dto.AdjustedQuantity;
-            stock.LastUpdated = dto.AdjustmentDate;
-
-            _context.StockAdjustments.Add(adjustments);
+            _context.StockAdjustments.Add(adjustment);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetAdjustments), new { id = adjustments.Id }, adjustments);
 
+            return Ok();
+        }
 
-            }
 
     }
 }
