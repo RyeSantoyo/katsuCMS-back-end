@@ -7,6 +7,7 @@ using katsuCMS_backend.Models.DTO.StockTracker;
 using katsuCMS_backend.Models.DTO.InventoryStock;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using katsuCMS_backend.Models.DTO.Product;
 
 namespace katsuCMS_backend.Controllers
 {
@@ -59,7 +60,7 @@ namespace katsuCMS_backend.Controllers
                 .Include(i => i.Product.ProductSuppliers)
                     .ThenInclude(ps => ps.Supplier)
                 .Include(i => i.Unit)
-                .Include(i=> i.Product.Category)
+                .Include(i => i.Product.Category)
                 .Where(i => i.Quantity < i.ReorderLevel)
                 .Select(i => new InventoryStockDto
                 {
@@ -77,6 +78,35 @@ namespace katsuCMS_backend.Controllers
                 .ToListAsync();
 
             return Ok(lowStockItems);
+        }
+
+        [HttpGet("products")]
+
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
+        {
+
+            var products = await _context.Products
+                                        .Include(p => p.Category)
+                                        .Include(p => p.Unit)
+                                        .Include(p => p.ProductSuppliers)
+                                            .ThenInclude(ps => ps.Supplier)
+                                        .ToListAsync();
+            var result = products.Select(p => new ProductDto
+            {
+                Id = p.Id,
+                ProductCode = p.ProductCode,
+                ProductName = p.ProductName,
+                Price = p.Price,
+                Description = p.Description,
+                CategoryId = p.CategoryId,
+                CategoryName = p.Category.CategoryName,
+                UnitId = p.UnitId,
+                UnitName = p.Unit.UnitName,
+                SupplierIds = p.ProductSuppliers.Select(ps => ps.SupplierId).ToList(),
+                SupplierNames = p.ProductSuppliers.Select(ps => ps.Supplier.SupplierName).ToList()
+            });
+
+            return Ok(result);
         }
     
         [HttpPost("AddStock")]
