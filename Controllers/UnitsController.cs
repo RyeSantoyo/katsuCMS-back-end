@@ -27,7 +27,7 @@ namespace katsuCMS_backend.Controllers
             {
                 Id = u.Id,
                 UnitName = u.UnitName
-            }).ToListAsync();
+            }).AsNoTracking().ToListAsync();
 
             if (!units.Any())
             {

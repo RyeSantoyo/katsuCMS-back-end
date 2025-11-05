@@ -28,7 +28,7 @@ namespace katsuCMS_backend.Controllers
                 Id = c.Id,
                 CategoryName = c.CategoryName
             })
-            .ToListAsync();
+            .AsNoTracking().ToListAsync();
 
             if (!categories.Any())
             {

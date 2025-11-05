@@ -29,7 +29,7 @@ namespace katsuCMS_backend.Controllers
                 Name = s.Name,
                 Address = s.Address,
                 ContactNumber = s.ContactNumber
-            }).ToListAsync();
+            }).AsNoTracking().ToListAsync();
 
             return Ok(stores);
         }

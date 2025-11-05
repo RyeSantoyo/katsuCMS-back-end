@@ -47,7 +47,7 @@ namespace katsuCMS_backend.Controllers
                                         InventoryValue = i.Product.Price * i.Quantity,
                                         LastUpdated = i.LastUpdated,
                                         SupplierNames = i.Product.ProductSuppliers.Select(ps => ps.Supplier.SupplierName).ToList()
-                                    }).ToListAsync();
+                                    }).AsNoTracking().ToListAsync();
 
             return Ok(stocks);
         }

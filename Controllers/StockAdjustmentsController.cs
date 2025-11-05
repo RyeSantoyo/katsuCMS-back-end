@@ -39,7 +39,7 @@ public async Task<ActionResult<IEnumerable<StockAdjustmentsDto>>> GetAdjustments
             Reason = a.Reason,
             AdjustmentDate = a.AdjustmentDate
         })
-        .ToListAsync();
+        .AsNoTracking().ToListAsync();
 
     return Ok(adjustments);
 }

@@ -28,7 +28,7 @@ namespace katsuCMS_backend.Controllers
                                         .Include(p => p.Unit)
                                         .Include(p => p.ProductSuppliers)
                                             .ThenInclude(ps => ps.Supplier)
-                                        .ToListAsync();
+                                        .AsNoTracking().ToListAsync();
             var result = products.Select(p => new ProductDto
             {
                 Id = p.Id,
