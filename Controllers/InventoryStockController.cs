@@ -8,6 +8,7 @@ using katsuCMS_backend.Models.DTO.InventoryStock;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using katsuCMS_backend.Models.DTO.Product;
+using System.Diagnostics;
 
 namespace katsuCMS_backend.Controllers
 {
@@ -25,12 +26,14 @@ namespace katsuCMS_backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<InventoryStockDto>>> GetCurrentStock()
         {
+            var watch = new Stopwatch();
+            watch.Start();
             var stocks = await _context.InventoryStocks
                                     .Include(i => i.Product)
                                     .Include(i => i.Product.ProductSuppliers)
                                         .ThenInclude(ps => ps.Supplier)
                                     .Include(i => i.Unit)
-                                    .Include(i=>i.Product.Category)
+                                    .Include(i => i.Product.Category)
                                     .Select(i => new InventoryStockDto
                                     {
                                         Id = i.Id,
@@ -48,13 +51,17 @@ namespace katsuCMS_backend.Controllers
                                         LastUpdated = i.LastUpdated,
                                         SupplierNames = i.Product.ProductSuppliers.Select(ps => ps.Supplier.SupplierName).ToList()
                                     }).AsNoTracking().ToListAsync();
-
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            Console.WriteLine($"Get Stock executed in {elapsedMs} ms");
             return Ok(stocks);
         }
 
         [HttpGet("LowStock")]
         public async Task<ActionResult<IEnumerable<InventoryStockDto>>> GetLowStock()
         {
+            var watch = new Stopwatch();
+            watch.Start();
             var lowStockItems = await _context.InventoryStocks
                 .Include(i => i.Product)
                 .Include(i => i.Product.ProductSuppliers)
@@ -76,7 +83,9 @@ namespace katsuCMS_backend.Controllers
                     SupplierNames = i.Product.ProductSuppliers.Select(ps => ps.Supplier.SupplierName).ToList()
                 })
                 .ToListAsync();
-
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            Console.WriteLine($"GetLowStock executed in {elapsedMs} ms");
             return Ok(lowStockItems);
         }
 
@@ -108,7 +117,7 @@ namespace katsuCMS_backend.Controllers
 
             return Ok(result);
         }
-    
+
         [HttpPost("AddStock")]
         public async Task<ActionResult<InventoryStockDto>> AddStock([FromBody] InventoryStockCreateDto dto)
         {
@@ -125,25 +134,25 @@ namespace katsuCMS_backend.Controllers
             await _context.SaveChangesAsync();
 
             var result = await _context.InventoryStocks
-                                        .Include(i=> i.Product)
-                                            .ThenInclude(i=> i.Category)
-                                        .Include(i=> i.Product.Unit)
-                                        .Include(i=> i.Product.ProductSuppliers)
-                                            .ThenInclude(i=> i.Supplier)
-                                       .Where(i => i.Id == stock.Id)    
+                                        .Include(i => i.Product)
+                                            .ThenInclude(i => i.Category)
+                                        .Include(i => i.Product.Unit)
+                                        .Include(i => i.Product.ProductSuppliers)
+                                            .ThenInclude(i => i.Supplier)
+                                       .Where(i => i.Id == stock.Id)
                                        .Select(p => new InventoryStockDto
-            {
-                Id = p.Id,
-                ProductCode = p.Product.ProductCode,
-                ProductName = p.Product.ProductName,
-                Category = p.Product.Category.CategoryName,
-                UnitName = p.Product.Unit.UnitName,
-                Quantity = p.Quantity,
-                ReorderLevel = p.ReorderLevel,
-                PreferredStockLevel = p.PreferredStockLevel,
-                LastUpdated = p.LastUpdated,
-                SupplierNames = p.Product.ProductSuppliers.Select(ps=> ps.Supplier.SupplierName).ToList()
-            }).FirstOrDefaultAsync();   
+                                       {
+                                           Id = p.Id,
+                                           ProductCode = p.Product.ProductCode,
+                                           ProductName = p.Product.ProductName,
+                                           Category = p.Product.Category.CategoryName,
+                                           UnitName = p.Product.Unit.UnitName,
+                                           Quantity = p.Quantity,
+                                           ReorderLevel = p.ReorderLevel,
+                                           PreferredStockLevel = p.PreferredStockLevel,
+                                           LastUpdated = p.LastUpdated,
+                                           SupplierNames = p.Product.ProductSuppliers.Select(ps => ps.Supplier.SupplierName).ToList()
+                                       }).FirstOrDefaultAsync();
 
             return CreatedAtAction(nameof(GetLowStock), new { id = stock.Id }, result);
         }
@@ -176,7 +185,7 @@ namespace katsuCMS_backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult>DeleteStockController(int id)
+        public async Task<ActionResult> DeleteStockController(int id)
         {
             var stock = await _context.InventoryStocks.FindAsync(id);
 
@@ -185,7 +194,7 @@ namespace katsuCMS_backend.Controllers
             _context.InventoryStocks.Remove(stock);
             await _context.SaveChangesAsync();
 
-            return Ok(new {message = $"{stock.Product.ProductName} have been removed"});
+            return Ok(new { message = $"{stock.Product.ProductName} have been removed" });
         }
     }
 }
