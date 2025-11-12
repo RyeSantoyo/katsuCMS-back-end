@@ -11,6 +11,7 @@ namespace katsuCMS_backend.Models
         public int InventoryStockId { get; set; }
         public InventoryStock? InventoryStock { get; set; }
         public int ProductId { get; set; }
+        public string ProductCode { get; set; } = string.Empty;
         public Product Product { get; set; } = null!;
         public decimal PreviousQuantity { get; set; }
         public decimal AdjustedQuantity { get; set; }

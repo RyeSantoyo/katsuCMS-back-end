@@ -30,7 +30,7 @@ namespace katsuCMS_backend.Controllers
                                     .Include(i => i.Product.ProductSuppliers)
                                         .ThenInclude(ps => ps.Supplier)
                                     .Include(i => i.Unit)
-                                    .Include(i=>i.Product.Category)
+                                    .Include(i => i.Product.Category)
                                     .Select(i => new InventoryStockDto
                                     {
                                         Id = i.Id,
@@ -108,7 +108,7 @@ namespace katsuCMS_backend.Controllers
 
             return Ok(result);
         }
-    
+
         [HttpPost("AddStock")]
         public async Task<ActionResult<InventoryStockDto>> AddStock([FromBody] InventoryStockCreateDto dto)
         {
@@ -125,25 +125,25 @@ namespace katsuCMS_backend.Controllers
             await _context.SaveChangesAsync();
 
             var result = await _context.InventoryStocks
-                                        .Include(i=> i.Product)
-                                            .ThenInclude(i=> i.Category)
-                                        .Include(i=> i.Product.Unit)
-                                        .Include(i=> i.Product.ProductSuppliers)
-                                            .ThenInclude(i=> i.Supplier)
-                                       .Where(i => i.Id == stock.Id)    
+                                        .Include(i => i.Product)
+                                            .ThenInclude(i => i.Category)
+                                        .Include(i => i.Product.Unit)
+                                        .Include(i => i.Product.ProductSuppliers)
+                                            .ThenInclude(i => i.Supplier)
+                                       .Where(i => i.Id == stock.Id)
                                        .Select(p => new InventoryStockDto
-            {
-                Id = p.Id,
-                ProductCode = p.Product.ProductCode,
-                ProductName = p.Product.ProductName,
-                Category = p.Product.Category.CategoryName,
-                UnitName = p.Product.Unit.UnitName,
-                Quantity = p.Quantity,
-                ReorderLevel = p.ReorderLevel,
-                PreferredStockLevel = p.PreferredStockLevel,
-                LastUpdated = p.LastUpdated,
-                SupplierNames = p.Product.ProductSuppliers.Select(ps=> ps.Supplier.SupplierName).ToList()
-            }).FirstOrDefaultAsync();   
+                                       {
+                                           Id = p.Id,
+                                           ProductCode = p.Product.ProductCode,
+                                           ProductName = p.Product.ProductName,
+                                           Category = p.Product.Category.CategoryName,
+                                           UnitName = p.Product.Unit.UnitName,
+                                           Quantity = p.Quantity,
+                                           ReorderLevel = p.ReorderLevel,
+                                           PreferredStockLevel = p.PreferredStockLevel,
+                                           LastUpdated = p.LastUpdated,
+                                           SupplierNames = p.Product.ProductSuppliers.Select(ps => ps.Supplier.SupplierName).ToList()
+                                       }).FirstOrDefaultAsync();
 
             return CreatedAtAction(nameof(GetLowStock), new { id = stock.Id }, result);
         }
@@ -176,7 +176,7 @@ namespace katsuCMS_backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult>DeleteStockController(int id)
+        public async Task<ActionResult> DeleteStockController(int id)
         {
             var stock = await _context.InventoryStocks.FindAsync(id);
 
@@ -185,7 +185,7 @@ namespace katsuCMS_backend.Controllers
             _context.InventoryStocks.Remove(stock);
             await _context.SaveChangesAsync();
 
-            return Ok(new {message = $"{stock.Product.ProductName} have been removed"});
+            return Ok(new { message = $"{stock.Product.ProductName} have been removed" });
         }
     }
 }
