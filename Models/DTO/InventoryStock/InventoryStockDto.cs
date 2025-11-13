@@ -9,6 +9,7 @@ namespace katsuCMS_backend.Models.DTO.InventoryStock
     {
         public int Id { get; set; }
         public int ProductId { get; set; }
+        public int SupplierId { get; set; }
         public string ProductCode { get; set; } = string.Empty;
         public string ProductName { get; set; } = string.Empty;
         public string UnitName { get; set; } = string.Empty;
