@@ -21,28 +21,28 @@ namespace katsuCMS_backend.Controllers
             _context = context;
         }
 
-[HttpGet]
-public async Task<ActionResult<IEnumerable<StockAdjustmentsDto>>> GetAdjustments()
-{
-    var adjustments = await _context.StockAdjustments
-        .Include(a => a.InventoryStock)
-            .ThenInclude(p => p!.Product)
-        .Include(a => a.InventoryStock!.Unit)
-        .Select(a => new StockAdjustmentsDto
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<StockAdjustmentsDto>>> GetAdjustments()
         {
-            Id = a.Id,
-            ProductName = a.InventoryStock!.Product!.ProductName,
-            UnitName = a.InventoryStock!.Unit!.UnitName,
-            PreviousQuantity = a.PreviousQuantity,
-            AdjustedQuantity = a.AdjustedQuantity,
-            AdjustmentType = a.AdjustmentType,
-            Reason = a.Reason,
-            AdjustmentDate = a.AdjustmentDate
-        })
-        .AsNoTracking().ToListAsync();
+            var adjustments = await _context.StockAdjustments
+                .Include(a => a.InventoryStock)
+                    .ThenInclude(p => p!.Product)
+                .Include(a => a.InventoryStock!.Unit)
+                .Select(a => new StockAdjustmentsDto
+                {
+                    Id = a.Id,
+                    ProductName = a.InventoryStock!.Product!.ProductName,
+                    UnitName = a.InventoryStock!.Unit!.UnitName,
+                    PreviousQuantity = a.PreviousQuantity,
+                    AdjustedQuantity = a.AdjustedQuantity,
+                    AdjustmentType = a.AdjustmentType,
+                    Reason = a.Reason,
+                    AdjustmentDate = a.AdjustmentDate
+                })
+                .AsNoTracking().ToListAsync();
 
-    return Ok(adjustments);
-}
+            return Ok(adjustments);
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateAdjustments([FromBody] StockAdjustmentsCreateDto dto)
@@ -58,6 +58,22 @@ public async Task<ActionResult<IEnumerable<StockAdjustmentsDto>>> GetAdjustments
             if (product == null)
                 return NotFound("Product not found.");
 
+            var PreviousQuantity = inventoryStock.Quantity;
+
+            try
+            {
+                if (dto.AdjustmentType == "Add")
+                    inventoryStock.Quantity += dto.AdjustedQuantity;
+                else if (dto.AdjustmentType == "Deduct")
+                    inventoryStock.Quantity -= dto.AdjustedQuantity;
+                else
+                    return BadRequest("Invalid adjustment type. Use 'Add' or 'Subtract'.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error adjusting stock: {ex.Message}");
+            }
+
             var adjustment = new StockAdjustments
             {
                 InventoryStockId = dto.InventoryStockId,
@@ -72,9 +88,14 @@ public async Task<ActionResult<IEnumerable<StockAdjustmentsDto>>> GetAdjustments
             };
 
             _context.StockAdjustments.Add(adjustment);
+
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new
+            {
+                Message = "Stock adjustment recorded successfully.",
+                NewQuantity = inventoryStock.Quantity
+            });
         }
 
 
