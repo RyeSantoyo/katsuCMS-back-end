@@ -110,7 +110,7 @@ namespace katsuCMS_backend.Controllers
             return Ok(result);
         }
 
-        [HttpPost("AddStock")]
+        [HttpPost]
         public async Task<ActionResult<InventoryStockDto>> AddStock([FromBody] InventoryStockCreateDto dto)
         {
             var stock = new InventoryStock
@@ -143,6 +143,7 @@ namespace katsuCMS_backend.Controllers
                                            ReorderLevel = p.ReorderLevel,
                                            PreferredStockLevel = p.PreferredStockLevel,
                                            LastUpdated = p.LastUpdated,
+                                           SupplierId = p.Product.ProductSuppliers.FirstOrDefault() != null ? p.Product.ProductSuppliers.FirstOrDefault()!.SupplierId : 0,
                                            SupplierNames = p.Product.ProductSuppliers.Select(ps => ps.Supplier.SupplierName).ToList()
                                        }).FirstOrDefaultAsync();
 

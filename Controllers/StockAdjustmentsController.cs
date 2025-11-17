@@ -67,7 +67,7 @@ namespace katsuCMS_backend.Controllers
                 else if (dto.AdjustmentType == "Deduct")
                     inventoryStock.Quantity -= dto.AdjustedQuantity;
                 else
-                    return BadRequest("Invalid adjustment type. Use 'Add' or 'Subtract'.");
+                    return BadRequest("Invalid adjustment type. Use 'Add' or 'Deduct'.");
             }
             catch (Exception ex)
             {

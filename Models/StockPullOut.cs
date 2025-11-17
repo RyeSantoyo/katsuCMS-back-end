@@ -14,6 +14,6 @@ namespace katsuCMS_backend.Models
         [Required]
         public string Reason { get; set; } = string.Empty;
         public DateTime PullOutDate { get; set; }
-         public ICollection<StockPullOutDetail> StockPullOutDetails { get; set; } = new List<StockPullOutDetail>();
+        public ICollection<StockPullOutDetail> StockPullOutDetails { get; set; } = new List<StockPullOutDetail>();
     }
 }
