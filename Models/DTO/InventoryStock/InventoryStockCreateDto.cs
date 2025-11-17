@@ -9,10 +9,10 @@ namespace katsuCMS_backend.Models.DTO.InventoryStock
     {
         public int ProductId { get; set; }
         public int UnitId { get; set; }
-        public int SupplierId { get; set; }
         public decimal Quantity { get; set; }
         public decimal ReorderLevel { get; set; }
         public decimal PreferredStockLevel { get; set; }
+        public List<int>? SupplierIds { get; set; }
     }
 
     // public class InventoryUpdateDto : InventoryStockCreateDto

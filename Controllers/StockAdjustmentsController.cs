@@ -52,7 +52,7 @@ namespace katsuCMS_backend.Controllers
 
             var inventoryStock = await _context.InventoryStocks.FindAsync(dto.InventoryStockId);
             if (inventoryStock == null)
-                return NotFound("Inventory stock not found.");
+                return NotFound("Inventory stock not found. Dito ka pasok");
 
             var product = await _context.Products.FindAsync(inventoryStock.ProductId);
             if (product == null)
