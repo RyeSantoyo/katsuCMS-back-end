@@ -15,6 +15,6 @@ namespace katsuCMS_backend.Models
         // public double? ConversionFactor { get; set; }
 
         public ICollection<Product> Products { get; set; } = new List<Product>();
-        //public ICollection<PurchaseOrderDetail> PurchaseOrderDetails { get; set; }
+        public ICollection<PurchaseOrderDetail>? PurchaseOrderDetails { get; set; }
     }
 }

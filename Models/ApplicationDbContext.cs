@@ -23,7 +23,8 @@ namespace katsuCMS_backend.Models
         public DbSet<InventoryStock> InventoryStocks { get; set; }
         public DbSet<ProductSupplier> ProductSuppliers { get; set; }
         public DbSet<StockAdjustments> StockAdjustments { get; set; }
-
+        public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
+        public DbSet<PurchaseOrderDetail> PurchaseOrderDetails { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -45,7 +46,7 @@ namespace katsuCMS_backend.Models
                 .WithMany(u => u.Products)
                 .HasForeignKey(p => p.UnitId)
                 .OnDelete(DeleteBehavior.Restrict);
-           
+
             //Product Supplier Many-to-Many
             modelBuilder.Entity<ProductSupplier>()
                 .HasKey(ps => new { ps.ProductId, ps.SupplierId });
@@ -59,10 +60,10 @@ namespace katsuCMS_backend.Models
                 .HasOne(ps => ps.Supplier)
                 .WithMany(s => s.ProductSuppliers)
                 .HasForeignKey(ps => ps.SupplierId);
-                
+
             modelBuilder.Entity<Product>()
                 .HasMany(p => p.InventoryStocks)
-                .WithOne(i=>i.Product)
+                .WithOne(i => i.Product)
                 .HasForeignKey(i => i.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
             //Inventory Stock
@@ -80,8 +81,36 @@ namespace katsuCMS_backend.Models
                         .OnDelete(DeleteBehavior.Restrict);
                 //entity.Property(e => e.Quantity).HasColumnType("decimal(18,2)");
                 entity.Property(e => e.ReorderLevel).HasColumnType("decimal(18,2)");
-                entity.Property(e => e.LastUpdated).HasDefaultValueSql("GETDATE()");            
+                entity.Property(e => e.LastUpdated).HasDefaultValueSql("GETDATE()");
             });
+
+            modelBuilder.Entity<PurchaseOrder>()
+            .HasIndex(p=> p.PONumber)
+            .IsUnique();
+
+            modelBuilder.Entity<PurchaseOrderDetail>()
+                .HasOne(pod => pod.PurchaseOrder)
+                .WithMany(po => po.PurchaseOrderDetails)
+                .HasForeignKey(pod => pod.PurchaseOrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            modelBuilder.Entity<PurchaseOrderDetail>()
+                .HasOne(pod => pod.Product)
+                .WithMany(pod=> pod.PurchaseOrderDetail)
+                .HasForeignKey(pod => pod.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<PurchaseOrderDetail>()
+                .HasOne(pod => pod.Unit)
+                .WithMany(u=> u.PurchaseOrderDetails)
+                .HasForeignKey(pod => pod.UnitId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PurchaseOrder>()
+                .HasOne(po => po.Supplier)
+                .WithMany(s => s.PurchaseOrders)
+                .HasForeignKey(po => po.SupplierId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

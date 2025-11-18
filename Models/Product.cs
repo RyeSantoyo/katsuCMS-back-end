@@ -19,7 +19,7 @@ namespace katsuCMS_backend.Models
         // public int Quantity { get; set; }
         [Display(Name = "Price")]
         [Column(TypeName = "decimal(18,2)")]
-         public decimal Price { get; set; }
+        public decimal Price { get; set; }
 
         [Display(Name = "Description")]
         public string Description { get; set; } = string.Empty;
@@ -37,6 +37,8 @@ namespace katsuCMS_backend.Models
 
         public List<ProductSupplier> ProductSuppliers { get; set; } = new List<ProductSupplier>();
         public ICollection<InventoryStock>? InventoryStocks { get; set; }
+        public ICollection<PurchaseOrderDetail>? PurchaseOrderDetail { get; set; }
+
 
         // public int SupplierId { get; set; }
         // public Supplier Supplier { get; set; } = null!;
