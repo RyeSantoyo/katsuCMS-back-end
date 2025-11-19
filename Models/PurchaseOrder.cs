@@ -18,7 +18,7 @@ namespace katsuCMS_backend.Models
         [Required]
         public int SupplierId { get; set; }
         [ForeignKey("SupplierId")]
-        public Supplier? Supplier { get; set; }
+        public Supplier Supplier { get; set; } = null!;
         public DateTime OrderDate { get; set; } = DateTime.Now;
         [Required]
         public PurchaseOrderStatus Status { get; set; } = PurchaseOrderStatus.Pending;

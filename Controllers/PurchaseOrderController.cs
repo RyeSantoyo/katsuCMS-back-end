@@ -1,0 +1,115 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using katsuCMS_backend.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+namespace katsuCMS_backend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class PurchaseOrderController : ControllerBase
+    {
+        private readonly ApplicationDbContext _context;
+        public PurchaseOrderController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PurchaseOrder>>> GetAll()
+        {
+            var pos = await _context.PurchaseOrders
+                .Include(po => po.Supplier)
+                .Include(po => po.PurchaseOrderDetails)
+                    .ThenInclude(d => d.Product)
+                .Select(po => new
+                {
+                    po.Id,
+                    po.PONumber,
+                    po.Supplier.SupplierName,
+                    Productname = string.Join(", ", po.PurchaseOrderDetails.Select(od => od.Product.ProductName)),
+                    po.OrderDate,
+                    Status = po.Status.ToString(),
+                    po.TotalAmount
+                }).AsNoTracking().ToListAsync();
+            Console.WriteLine("Purchase Orders retrieved successfully" + pos);
+            return Ok(new { message = "Purchase Orders retrieved successfully", data = pos });
+        }
+
+        [HttpGet]
+
+        public async Task<ActionResult> GetSuppliers()
+        {
+            var suppliers = await _context.Suppliers
+                                        .Select(s => s.SupplierName)
+                                        .AsNoTracking()
+                                        .ToListAsync();
+            return Ok(new { message = "Suppliers retrieved successfully", data = suppliers });
+        }
+        [HttpGet]
+        public async Task<ActionResult> GetProducts()
+        {
+            var products = await _context.Products.Select(p => p.ProductName)
+                                        .AsNoTracking()
+                                        .ToListAsync();
+            return Ok(new { message = "Products retrieved successfully", data = products });
+        }
+        [HttpGet]
+        public async Task<ActionResult> GetProductSupplier (int id)
+        {
+            var productSuppliers = await _context.ProductSuppliers
+                                        .Where(ps => ps.SupplierId == id)
+                                        .Select(ps => new
+                                        {
+                                            id = ps.SupplierId,
+                                            ps.Product.ProductName,
+                                            ps.Product.Unit.UnitName,
+                                            ps.Product.UnitId,
+                                            ps.Product.Price
+                                        }).AsNoTracking().ToListAsync();
+
+            return Ok(new { message = "Product Suppliers retrieved successfully", data = productSuppliers });
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPurchaseOrderById(int id)
+        {
+            var po = await _context.PurchaseOrders
+                                    .Include(po=> po.Supplier)
+                                    .Include(po => po.PurchaseOrderDetails)
+                                        .ThenInclude(d => d.Product)
+                                        .ThenInclude(p => p.Unit)
+                                    .FirstOrDefaultAsync(po => po.Id == id);
+
+            if (po == null)
+            {
+                return NotFound(new { message = "Purchase Order not found" });
+            }
+
+            var poDto = new
+            {
+                po.Id,
+                po.PONumber,
+                SupplierName = po.Supplier.SupplierName,
+                po.OrderDate,
+                Status = po.Status.ToString(),
+                po.TotalAmount,
+                PurchaseOrderDetails = po.PurchaseOrderDetails.Select(d => new
+                {
+                    d.Id,
+                    ProductName = d.Product.ProductName,
+                    UnitName = d.Product.Unit.UnitName,
+                    d.Quantity,
+                    d.UnitPrice,
+                    d.TotalPrice
+                }).ToList()
+            };
+            Console.WriteLine("Purchase Order retrieved successfully" + poDto);
+
+            return Ok(new { message = "Purchase Order retrieved successfully", data = po });
+        }
+
+    }
+}
