@@ -41,6 +41,8 @@ namespace katsuCMS_backend.Models
             //     .HasForeignKey(p => p.SupplierId)
             //     .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Product>().HasIndex(p => p.ProductCode).IsUnique();
+
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Unit)
                 .WithMany(u => u.Products)
