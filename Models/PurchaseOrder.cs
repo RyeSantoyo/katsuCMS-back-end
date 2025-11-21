@@ -23,7 +23,7 @@ namespace katsuCMS_backend.Models
         [Required]
         public PurchaseOrderStatus Status { get; set; } = PurchaseOrderStatus.Pending;
 
-        public double TotalAmount { get; set; }
+        public decimal TotalAmount { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
