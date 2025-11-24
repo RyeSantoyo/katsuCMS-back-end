@@ -46,6 +46,7 @@ namespace katsuCMS_backend.Controllers
 
             return Ok(result);
 
+            #region 
             // var products = await _context.Products.Select(p => new ProductDto
             // {
             //     Id = p.Id,
@@ -66,10 +67,12 @@ namespace katsuCMS_backend.Controllers
             //     return NotFound();
             // }
             // return Ok(products);
+            #endregion
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
+            #region 
             // var product = await _context.Products.Where(p => p.Id == id)
             // .Select(p => new ProductDto
             // {
@@ -91,6 +94,7 @@ namespace katsuCMS_backend.Controllers
             // {
             //     return NotFound();
             // }
+            #endregion
             var products = await _context.Products
                                          .Include(p => p.Category)
                                          .Include(p => p.Unit)

@@ -57,7 +57,7 @@ namespace katsuCMS_backend.Controllers
             return Ok(new { message = "Products retrieved successfully", data = products });
         }
         [HttpGet]
-        public async Task<ActionResult> GetProductSupplier (int id)
+        public async Task<ActionResult> GetProductBySupplier (int id)
         {
             var productSuppliers = await _context.ProductSuppliers
                                         .Where(ps => ps.SupplierId == id)
@@ -76,6 +76,7 @@ namespace katsuCMS_backend.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPurchaseOrderById(int id)
         {
+            Console.WriteLine($"Fetching PO with ID {id}");
             var po = await _context.PurchaseOrders
                                     .Include(po=> po.Supplier)
                                     .Include(po => po.PurchaseOrderDetails)
