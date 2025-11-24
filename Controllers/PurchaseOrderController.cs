@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using katsuCMS_backend.Models;
+using katsuCMS_backend.Models.DTO.PurchaseOrder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 namespace katsuCMS_backend.Controllers
@@ -17,6 +18,7 @@ namespace katsuCMS_backend.Controllers
             _context = context;
         }
 
+        #region Get
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PurchaseOrder>>> GetAll()
         {
@@ -57,7 +59,7 @@ namespace katsuCMS_backend.Controllers
             return Ok(new { message = "Products retrieved successfully", data = products });
         }
         [HttpGet]
-        public async Task<ActionResult> GetProductBySupplier (int id)
+        public async Task<ActionResult> GetProductBySupplier(int id)
         {
             var productSuppliers = await _context.ProductSuppliers
                                         .Where(ps => ps.SupplierId == id)
@@ -78,7 +80,7 @@ namespace katsuCMS_backend.Controllers
         {
             Console.WriteLine($"Fetching PO with ID {id}");
             var po = await _context.PurchaseOrders
-                                    .Include(po=> po.Supplier)
+                                    .Include(po => po.Supplier)
                                     .Include(po => po.PurchaseOrderDetails)
                                         .ThenInclude(d => d.Product)
                                         .ThenInclude(p => p.Unit)
@@ -111,6 +113,46 @@ namespace katsuCMS_backend.Controllers
 
             return Ok(new { message = "Purchase Order retrieved successfully", data = po });
         }
+        #endregion
 
+        [HttpPost]
+        public async Task<IActionResult> CreatePO([FromBody] PurchaseOrderDto pDto)
+        {
+            if (pDto == null) return BadRequest(new { message = "Invalid input: Request body is null" });
+
+            Console.WriteLine("$Received JSON: {System.Text.Json.JsonSerializer.Serialize(pDto)}");
+
+            if (pDto.OrderDetails == null || pDto.OrderDetails.Count == 0)
+            {
+                return BadRequest(new { message = "No Order detail available" });
+            }
+            try
+            {
+                var newPo = new PurchaseOrder
+                {
+                    PONumber = pDto.PONumber,
+                    SupplierId = pDto.SupplierId,
+                    OrderDate = pDto.OrderDate,
+                    Status = pDto.Status,
+                    TotalAmount = pDto.OrderDetails.Sum(d => d.Quantity * d.UnitPrice),
+                    PurchaseOrderDetails = pDto.OrderDetails.Select(d => new PurchaseOrderDetail
+                    {
+                        ProductId = d.ProductId,
+                        Quantity = d.Quantity,
+                        UnitPrice = d.UnitPrice,
+                        TotalPrice = d.Quantity * d.UnitPrice,
+                        UnitId = d.UnitId
+                    }).ToList()
+                };
+                _context.PurchaseOrders.Add(newPo);
+                _context.SaveChanges();
+                return Ok(new { message = "Purchase Order Created" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error Occured", error = ex.Message });
+
+            }
+        }
     }
 }

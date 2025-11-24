@@ -15,6 +15,6 @@ namespace katsuCMS_backend.Models.DTO.PurchaseOrder
         public decimal TotalAmount { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
-        public List<PurchaseOrderDetailDTO> PurchaseOrderDetails { get; set; } = new();
+        public List<PurchaseOrderDetailDTO> OrderDetails { get; set; } = new();
     }
 }
