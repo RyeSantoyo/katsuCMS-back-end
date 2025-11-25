@@ -11,6 +11,7 @@ namespace katsuCMS_backend.Models
         public int Id { get; set; }
         public int PurchaseOrderId { get; set; }
         public PurchaseOrder PurchaseOrder { get; set; } = null!;
+        public InventoryStock InventoryStock {get;set;} = null!;
         [Required]
         public int ProductId { get; set; }
         public Product Product { get; set; } = null!;
