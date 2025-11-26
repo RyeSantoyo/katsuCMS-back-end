@@ -10,11 +10,13 @@ namespace katsuCMS_backend.Models
     {
         public int Id { get; set; }
         public int PurchaseOrderId { get; set; }
+        public string PONumber { get; set; } = string.Empty;
         public PurchaseOrder PurchaseOrder { get; set; } = null!;
         public InventoryStock InventoryStock {get;set;} = null!;
         [Required]
         public int ProductId { get; set; }
         public string ProductName { get; set; } = string.Empty;
+        public string PurchaseOrderNumber { get; set; } = string.Empty;
         public Product Product { get; set; } = null!;
         public int UnitId { get; set; }
         public Unit Unit { get; set; } = null!;

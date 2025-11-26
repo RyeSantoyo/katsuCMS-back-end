@@ -138,6 +138,7 @@ namespace katsuCMS_backend.Controllers
                     TotalAmount = pDto.OrderDetails.Sum(d => d.Quantity * d.UnitPrice),
                     PurchaseOrderDetails = pDto.OrderDetails.Select(d => new PurchaseOrderDetail
                     {
+                        PurchaseOrderNumber = d.PONumber,
                         ProductName = d.ProductName,
                         ProductId = d.ProductId,
                         Quantity = d.Quantity,
