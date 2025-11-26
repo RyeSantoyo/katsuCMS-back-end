@@ -8,6 +8,7 @@ namespace katsuCMS_backend.Models.DTO.PurchaseOrderDetailDto
 {
     public class PurchaseOrderDetailDTO
     {
+        public string ProductName { get; set; } = string.Empty;
         public int ProductId { get; set; }
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }

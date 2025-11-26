@@ -14,6 +14,7 @@ namespace katsuCMS_backend.Models
         public InventoryStock InventoryStock {get;set;} = null!;
         [Required]
         public int ProductId { get; set; }
+        public string ProductName { get; set; } = string.Empty;
         public Product Product { get; set; } = null!;
         public int UnitId { get; set; }
         public Unit Unit { get; set; } = null!;

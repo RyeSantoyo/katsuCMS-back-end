@@ -115,7 +115,7 @@ namespace katsuCMS_backend.Controllers
             return Ok(new { message = "Purchase Order retrieved successfully", data = poDto });
         }
         #endregion
-
+        #region Post
         [HttpPost]
         public async Task<IActionResult> CreatePO([FromBody] PurchaseOrderDto pDto)
         {
@@ -138,6 +138,7 @@ namespace katsuCMS_backend.Controllers
                     TotalAmount = pDto.OrderDetails.Sum(d => d.Quantity * d.UnitPrice),
                     PurchaseOrderDetails = pDto.OrderDetails.Select(d => new PurchaseOrderDetail
                     {
+                        ProductName = d.ProductName,
                         ProductId = d.ProductId,
                         Quantity = d.Quantity,
                         UnitPrice = d.UnitPrice,
@@ -155,6 +156,8 @@ namespace katsuCMS_backend.Controllers
 
             }
         }
+        #endregion
+        #region Patch
         [HttpPatch("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] PurchaseOrderUpdateDto dto)
         {
@@ -192,6 +195,8 @@ namespace katsuCMS_backend.Controllers
             }
             return BadRequest(new { message = "Invalid status value." });
         }
+        #endregion
+        #region Delete
         [HttpDelete]
         public async Task<IActionResult> DeletePo(int id)
         {
@@ -207,4 +212,5 @@ namespace katsuCMS_backend.Controllers
             return Ok(new { message = "Entry succesfully deleted" });
         }
     }
+    #endregion
 }
