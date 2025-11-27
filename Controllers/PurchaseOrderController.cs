@@ -63,15 +63,15 @@ namespace katsuCMS_backend.Controllers
         public async Task<ActionResult> GetProductBySupplier(int id)
         {
             var productSuppliers = await _context.ProductSuppliers
-                                        .Where(ps => ps.SupplierId == id)
-                                        .Select(ps => new
-                                        {
-                                            id = ps.SupplierId,
-                                            ps.Product.ProductName,
-                                            ps.Product.Unit.UnitName,
-                                            ps.Product.UnitId,
-                                            ps.Product.Price
-                                        }).AsNoTracking().ToListAsync();
+                .Where(ps => ps.SupplierId == id)
+                .Select(ps => new
+                {
+                    ps.ProductId,
+                    ps.Product.ProductName,
+                    ps.Product.Unit.UnitName,
+                    ps.Product.UnitId,
+                    ps.Product.Price
+                }).AsNoTracking().ToListAsync();
 
             return Ok(new { message = "Product Suppliers retrieved successfully", data = productSuppliers });
         }
@@ -85,6 +85,7 @@ namespace katsuCMS_backend.Controllers
                                     .Include(po => po.PurchaseOrderDetails)
                                         .ThenInclude(d => d.Product)
                                         .ThenInclude(p => p.Unit)
+                                        .AsNoTracking()
                                     .FirstOrDefaultAsync(po => po.Id == id);
 
             if (po == null)
@@ -116,10 +117,28 @@ namespace katsuCMS_backend.Controllers
         }
         #endregion
         #region Post
+        private async Task<string> GeneratePONumber()
+        {
+            var lastPo = await _context.PurchaseOrders.OrderByDescending(po => po.Id).FirstOrDefaultAsync();
+            int lastNumber = 0;
+
+            if (lastPo != null)
+            {
+                var parts = lastPo.PONumber.Split('-');
+                if (parts.Length == 2 && int.TryParse(parts[1], out var num))
+                {
+                    lastNumber = num;
+                }
+            }
+            return $"PO-{(lastNumber + 1).ToString("D4")}";
+        }
         [HttpPost]
         public async Task<IActionResult> CreatePO([FromBody] PurchaseOrderDto pDto)
         {
             if (pDto == null) return BadRequest(new { message = "Invalid input: Request body is null" });
+            var supplierExists = await _context.Suppliers.AnyAsync(s => s.Id == pDto.SupplierId);
+            if (!supplierExists)
+                return BadRequest(new { message = "Supplier does not exist." });
 
             Console.WriteLine($"Received JSON: {JsonSerializer.Serialize(pDto)}");
 
@@ -131,7 +150,7 @@ namespace katsuCMS_backend.Controllers
             {
                 var newPo = new PurchaseOrder
                 {
-                    PONumber = pDto.PONumber,
+                    PONumber = await GeneratePONumber(),
                     SupplierId = pDto.SupplierId,
                     OrderDate = pDto.OrderDate,
                     Status = pDto.Status,
@@ -147,6 +166,23 @@ namespace katsuCMS_backend.Controllers
                         UnitId = d.UnitId
                     }).ToList()
                 };
+
+                foreach (var item in pDto.OrderDetails)
+                {
+                    var productExists = await _context.Products.AnyAsync(p => p.Id == item.ProductId);
+                    if (!productExists)
+                        return BadRequest(new { message = $"Product with ID {item.ProductId} does not exist." });
+
+                    var unitExists = await _context.Units.AnyAsync(u => u.Id == item.UnitId);
+                    if (!unitExists)
+                        return BadRequest(new { message = $"Unit with ID {item.UnitId} does not exist." });
+
+                    var validSupplierProduct = await _context.ProductSuppliers
+                                                .AnyAsync(ps => ps.ProductId == item.ProductId && ps.SupplierId == pDto.SupplierId);
+                    if (!validSupplierProduct)
+                        return BadRequest(new { message = $"Product {item.ProductId} is not supplied by this Supplier." });
+                }
+
                 await _context.PurchaseOrders.AddAsync(newPo);
                 await _context.SaveChangesAsync();
                 return Ok(new { message = "Purchase Order Created" });
@@ -159,6 +195,18 @@ namespace katsuCMS_backend.Controllers
         }
         #endregion
         #region Patch
+
+        private bool IsValid(PurchaseOrderStatus current, PurchaseOrderStatus next)
+        {
+            return current switch
+            {
+                PurchaseOrderStatus.Pending => next == PurchaseOrderStatus.Approved || next == PurchaseOrderStatus.Cancelled,
+                PurchaseOrderStatus.Approved => next == PurchaseOrderStatus.Received || next == PurchaseOrderStatus.Cancelled,
+                PurchaseOrderStatus.Received => next == PurchaseOrderStatus.Received,
+                _ => false
+            };
+
+        }
         [HttpPatch("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] PurchaseOrderUpdateDto dto)
         {
@@ -172,29 +220,41 @@ namespace katsuCMS_backend.Controllers
             if (po == null) return NotFound(new { message = "Purchase Order not found." });
 
             if (Enum.TryParse<PurchaseOrderStatus>(dto.Status.ToString() ?? string.Empty, true, out var newStatus))
-            {
-                po.Status = newStatus;
-                if (newStatus == PurchaseOrderStatus.Received)
-                {
-                    foreach (var detail in po.PurchaseOrderDetails)
-                    {
-                        //detail.InventoryStock.Quantity += detail.Quantity;
+                return BadRequest(new { message = "Invalid status value." });
 
-                        var log = new StockLogs
+            if (!IsValid(po.Status, newStatus))
+                return BadRequest(new { message = $"Cannot change status from {po.Status} to {newStatus}" });
+
+            if (newStatus == PurchaseOrderStatus.Received)
+            {
+                foreach (var detail in po.PurchaseOrderDetails)
+                {
+                    var log = new StockLogs
+                    {
+                        ProductId = detail.ProductId,
+                        QuantityChange = (int)detail.Quantity,
+                        UnitPrice = detail.UnitPrice,
+                        Reason = "Stock Received",
+                        DateLogged = DateTime.Now,
+                    };
+                    await _context.StockLogs.AddAsync(log);
+
+                    var stock = await _context.InventoryStocks
+                        .FirstOrDefaultAsync(s => s.ProductId == detail.ProductId && s.UnitId == detail.UnitId);
+                    if (stock != null) stock.Quantity += detail.Quantity;
+                    else
+                    {
+                        _context.InventoryStocks.Add(new InventoryStock
                         {
                             ProductId = detail.ProductId,
-                            QuantityChange = (int)detail.Quantity,
-                            UnitPrice = (decimal)detail.UnitPrice,
-                            Reason = "Stock Received",
-                            DateLogged = DateTime.Now
-                        };
-                        await _context.StockLogs.AddAsync(log);
+                            UnitId = detail.UnitId,
+                            Quantity = detail.Quantity
+                        });
                     }
                 }
-                await _context.SaveChangesAsync();
-                return Ok(new { message = "Status updated successfully" });
             }
-            return BadRequest(new { message = "Invalid status value." });
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Status updated successfully" });
         }
         #endregion
         #region Delete
@@ -206,6 +266,10 @@ namespace katsuCMS_backend.Controllers
             .FirstOrDefault(po => po.Id == id);
 
             if (po == null) return BadRequest("Cannot delete this entry");
+            if (po.Status != PurchaseOrderStatus.Pending)
+            {
+                return BadRequest(new { message = "Cannot delete Purchase Order unless it is Pending." });
+            }
 
             _context.PurchaseOrderDetails.RemoveRange(po.PurchaseOrderDetails);
             _context.PurchaseOrders.Remove(po);

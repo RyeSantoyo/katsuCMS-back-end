@@ -13,12 +13,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<ApplicationDbContext>(ops => 
 ops.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// builder.Services.AddDbContext<ApplicationDbContext>(ops=> 
+// ops.UseSqlServer(builder.Configuration.GetConnectionString("DefCon")));
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
     policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // Replace with your front-end URL
+        policy.WithOrigins("http://localhost:3000")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
