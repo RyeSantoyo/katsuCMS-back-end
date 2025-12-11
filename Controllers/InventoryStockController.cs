@@ -120,7 +120,7 @@ namespace katsuCMS_backend.Controllers
                 Quantity = dto.Quantity,
                 ReorderLevel = dto.ReorderLevel,
                 PreferredStockLevel = dto.PreferredStockLevel,
-                LastUpdated = DateTime.Now
+                LastUpdated = DateTime.UtcNow
             };
             _context.InventoryStocks.Add(stock);
             await _context.SaveChangesAsync();
@@ -147,7 +147,7 @@ namespace katsuCMS_backend.Controllers
                                            SupplierNames = p.Product.ProductSuppliers.Select(ps => ps.Supplier.SupplierName).ToList()
                                        }).FirstOrDefaultAsync();
 
-            return CreatedAtAction(nameof(GetLowStock), new { id = stock.Id }, result);
+            return CreatedAtAction(nameof(GetCurrentStock), new { id = stock.Id }, result);
         }
 
         [HttpPut("UpdateReorderLevel/{id}")]
