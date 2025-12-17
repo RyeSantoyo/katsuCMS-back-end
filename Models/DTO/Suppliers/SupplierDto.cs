@@ -11,6 +11,7 @@ namespace katsuCMS_backend.Models.DTO.Suppliers
         public string SupplierName { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string ContactNumber { get; set; } = string.Empty;
+        public string SupplierCode { get; set; } = string.Empty;
 
         public List<string> ProductName { get; set; } = new();
     }

@@ -45,7 +45,8 @@ namespace katsuCMS_backend.Controllers
                 Id = s.Id,
                 SupplierName = s.SupplierName,
                 Address = s.Address,
-                ContactNumber = s.ContactNumber
+                ContactNumber = s.ContactNumber,
+                SupplierCode = s.SupplierCode
             })
             .FirstOrDefaultAsync();
 
@@ -63,7 +64,8 @@ namespace katsuCMS_backend.Controllers
             {
                 SupplierName = dto.SupplierName,
                 Address = dto.Address,
-                ContactNumber = dto.ContactNumber
+                ContactNumber = dto.ContactNumber,
+                SupplierCode = dto.SupplierCode
             };
 
             _context.Suppliers.Add(supplier);
@@ -74,7 +76,8 @@ namespace katsuCMS_backend.Controllers
                 Id = supplier.Id,
                 SupplierName = supplier.SupplierName,
                 Address = supplier.Address,
-                ContactNumber = supplier.ContactNumber
+                ContactNumber = supplier.ContactNumber,
+                SupplierCode = supplier.SupplierCode
             };
 
             return CreatedAtAction(nameof(GetSupplier), new { id = supplier.Id }, result);
@@ -92,6 +95,7 @@ namespace katsuCMS_backend.Controllers
             supplier.SupplierName = dto.SupplierName;
             supplier.Address = dto.Address;
             supplier.ContactNumber = dto.ContactNumber;
+            supplier.SupplierCode = dto.SupplierCode;
 
             await _context.SaveChangesAsync();
 
