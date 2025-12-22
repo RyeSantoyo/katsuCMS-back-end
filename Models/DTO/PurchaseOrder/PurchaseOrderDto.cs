@@ -10,6 +10,7 @@ namespace katsuCMS_backend.Models.DTO.PurchaseOrder
     {
         public string PONumber { get; set; } = string.Empty;
         public int SupplierId { get; set; }
+        public string SupplierCode { get; set; } = string.Empty;
         public DateTime OrderDate { get; set; } = DateTime.Now;
         public PurchaseOrderStatus Status  { get; set; } = PurchaseOrderStatus.Pending;
         public decimal TotalAmount { get; set; }

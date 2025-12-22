@@ -46,7 +46,7 @@ namespace katsuCMS_backend.Controllers
         public async Task<ActionResult> GetSuppliers()
         {
             var suppliers = await _context.Suppliers
-                                        .Select(s => new { s.Id, s.SupplierName })
+                                        .Select(s => new { s.Id, s.SupplierName, s.SupplierCode })
                                         .AsNoTracking()
                                         .ToListAsync();
             return Ok(new { message = "Suppliers retrieved successfully", data = suppliers });
@@ -137,6 +137,7 @@ namespace katsuCMS_backend.Controllers
         {
             if (pDto == null) return BadRequest(new { message = "Invalid input: Request body is null" });
             var supplierExists = await _context.Suppliers.AnyAsync(s => s.Id == pDto.SupplierId);
+        // var supplierExists = await _context.Suppliers.AnyAsync(s => s.Id == pDto.SupplierId && s.SupplierCode == pDto.SupplierCode);
             if (!supplierExists)
                 return BadRequest(new { message = "Supplier does not exist." });
 

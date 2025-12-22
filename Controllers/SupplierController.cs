@@ -28,7 +28,8 @@ namespace katsuCMS_backend.Controllers
                 Id = s.Id,
                 SupplierName = s.SupplierName,
                 Address = s.Address,
-                ContactNumber = s.ContactNumber
+                ContactNumber = s.ContactNumber,
+                SupplierCode = s.SupplierCode
             }).AsNoTracking().ToListAsync();
 
             return Ok(supplier);
