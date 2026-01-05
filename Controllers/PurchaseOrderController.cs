@@ -115,11 +115,22 @@ namespace katsuCMS_backend.Controllers
 
             return Ok(new { message = "Purchase Order retrieved successfully", data = poDto });
         }
+
+                [HttpGet("GeneratePONumber")]
+        public async Task<IActionResult> GetNextPONumber()
+        {
+            var poNumber = await GeneratePONumber();
+            return Ok(new { poNumber });
+        }
         #endregion
+
         #region Post
         private async Task<string> GeneratePONumber()
         {
-            var lastPo = await _context.PurchaseOrders.OrderByDescending(po => po.Id).FirstOrDefaultAsync();
+            var lastPo = await _context.PurchaseOrders
+                .OrderByDescending(po => po.Id)
+                .FirstOrDefaultAsync();
+
             int lastNumber = 0;
 
             if (lastPo != null)
@@ -130,14 +141,15 @@ namespace katsuCMS_backend.Controllers
                     lastNumber = num;
                 }
             }
-            return $"PO-{(lastNumber + 1).ToString("D4")}";
+
+            return $"PO-{(lastNumber + 1):D4}";
         }
         [HttpPost]
         public async Task<IActionResult> CreatePO([FromBody] PurchaseOrderDto pDto)
         {
             if (pDto == null) return BadRequest(new { message = "Invalid input: Request body is null" });
             var supplierExists = await _context.Suppliers.AnyAsync(s => s.Id == pDto.SupplierId);
-        // var supplierExists = await _context.Suppliers.AnyAsync(s => s.Id == pDto.SupplierId && s.SupplierCode == pDto.SupplierCode);
+            // var supplierExists = await _context.Suppliers.AnyAsync(s => s.Id == pDto.SupplierId && s.SupplierCode == pDto.SupplierCode);
             if (!supplierExists)
                 return BadRequest(new { message = "Supplier does not exist." });
 
