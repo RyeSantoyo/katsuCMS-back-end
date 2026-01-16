@@ -116,7 +116,7 @@ namespace katsuCMS_backend.Controllers
             return Ok(new { message = "Purchase Order retrieved successfully", data = poDto });
         }
 
-                [HttpGet("GeneratePONumber")]
+        [HttpGet("GeneratePONumber")]
         public async Task<IActionResult> GetNextPONumber()
         {
             var poNumber = await GeneratePONumber();
@@ -170,7 +170,12 @@ namespace katsuCMS_backend.Controllers
                     TotalAmount = pDto.OrderDetails.Sum(d => d.Quantity * d.UnitPrice),
                     PurchaseOrderDetails = pDto.OrderDetails.Select(d => new PurchaseOrderDetail
                     {
-                        PurchaseOrderNumber = d.PONumber,
+                        InventoryStock = new InventoryStock
+                        {
+                            ProductId = d.ProductId,
+                            Quantity = d.Quantity,
+                            UnitId = d.UnitId
+                        },
                         ProductName = d.ProductName,
                         ProductId = d.ProductId,
                         Quantity = d.Quantity,
@@ -178,8 +183,9 @@ namespace katsuCMS_backend.Controllers
                         TotalPrice = d.Quantity * d.UnitPrice,
                         UnitId = d.UnitId
                     }).ToList()
-                };
 
+                };
+                Console.WriteLine(JsonSerializer.Serialize(pDto));
                 foreach (var item in pDto.OrderDetails)
                 {
                     var productExists = await _context.Products.AnyAsync(p => p.Id == item.ProductId);
@@ -202,6 +208,7 @@ namespace katsuCMS_backend.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 return StatusCode(500, new { message = "Error Occured", error = ex.Message });
 
             }
