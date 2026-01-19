@@ -161,9 +161,10 @@ namespace katsuCMS_backend.Controllers
             }
             try
             {
+                var poNumber = await GeneratePONumber();
                 var newPo = new PurchaseOrder
                 {
-                    PONumber = await GeneratePONumber(),
+                    PONumber = poNumber,
                     SupplierId = pDto.SupplierId,
                     OrderDate = pDto.OrderDate,
                     Status = pDto.Status,
@@ -176,6 +177,7 @@ namespace katsuCMS_backend.Controllers
                             Quantity = d.Quantity,
                             UnitId = d.UnitId
                         },
+                        PONumber = poNumber,
                         ProductName = d.ProductName,
                         ProductId = d.ProductId,
                         Quantity = d.Quantity,
