@@ -35,7 +35,8 @@ namespace katsuCMS_backend.Controllers
                     Productname = string.Join(", ", po.PurchaseOrderDetails.Select(od => od.Product.ProductName)),
                     po.OrderDate,
                     Status = po.Status.ToString(),
-                    po.TotalAmount
+                    po.TotalAmount,
+                    ItemsCount = po.PurchaseOrderDetails.Count
                 }).AsNoTracking().ToListAsync();
             Console.WriteLine($"Retrieved PO count: {pos.Count}");
             return Ok(new { message = "Purchase Orders retrieved successfully", data = pos });
