@@ -36,6 +36,7 @@ namespace katsuCMS_backend.Controllers
                     po.OrderDate,
                     Status = po.Status.ToString(),
                     po.TotalAmount,
+                    Quantity = po.PurchaseOrderDetails.Sum(d => d.Quantity),
                     ItemsCount = po.PurchaseOrderDetails.Count
                 }).AsNoTracking().ToListAsync();
             Console.WriteLine($"Retrieved PO count: {pos.Count}");
