@@ -177,7 +177,9 @@ namespace katsuCMS_backend.Controllers
                         {
                             ProductId = d.ProductId,
                             Quantity = d.Quantity,
-                            UnitId = d.UnitId
+                            UnitId = d.UnitId,
+                            // ReorderLevel = 10,
+                            // PreferredStockLevel = 50
                         },
                         PurchaseOrderNumber = poNumber,
                         ProductName = d.ProductName,
