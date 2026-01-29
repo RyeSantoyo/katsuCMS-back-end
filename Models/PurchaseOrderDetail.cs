@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,7 +11,9 @@ namespace katsuCMS_backend.Models
     {
         public int Id { get; set; }
         public int PurchaseOrderId { get; set; }
-        public string PONumber { get; set; } = string.Empty;
+
+        [Required]
+        public string PurchaseOrderNumber { get; set; } = string.Empty;
         public PurchaseOrder PurchaseOrder { get; set; } = null!;
         public InventoryStock InventoryStock {get;set;} = null!;
         [Required]

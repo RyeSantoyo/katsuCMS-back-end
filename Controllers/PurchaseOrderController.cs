@@ -179,7 +179,7 @@ namespace katsuCMS_backend.Controllers
                             Quantity = d.Quantity,
                             UnitId = d.UnitId
                         },
-                        PONumber = poNumber,
+                        PurchaseOrderNumber = poNumber,
                         ProductName = d.ProductName,
                         ProductId = d.ProductId,
                         Quantity = d.Quantity,
@@ -213,7 +213,7 @@ namespace katsuCMS_backend.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return StatusCode(500, new { message = "Error Occured", error = ex.Message });
+                return StatusCode(500, new { message = "Error Occured at line 261", error = ex.Message });
 
             }
         }
