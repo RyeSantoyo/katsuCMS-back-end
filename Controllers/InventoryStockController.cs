@@ -42,7 +42,7 @@ namespace katsuCMS_backend.Controllers
                                         Quantity = i.Quantity,
                                         ReorderLevel = i.ReorderLevel,
                                         PreferredStockLevel = i.PreferredStockLevel,
-                                        IsLowstock = i.Quantity < i.ReorderLevel,
+                                        IsLowstock = i.Quantity <= i.ReorderLevel,
                                         Price = i.Product.Price,
                                         InventoryValue = i.Product.Price * i.Quantity,
                                         LastUpdated = i.LastUpdated,
@@ -153,7 +153,9 @@ namespace katsuCMS_backend.Controllers
         [HttpPut("UpdateReorderLevel/{id}")]
         public async Task<ActionResult> UpdateReorderLevel(int id, [FromBody] InventoryStockUpdateDto dto)
         {
-            var stock = await _context.InventoryStocks.FindAsync(id);
+            var stock = await _context.InventoryStocks
+            .Include(s => s.Product)
+            .FirstOrDefaultAsync(s => s.Id == id);
             if (stock == null) return NotFound();
 
             if (dto.Quantity.HasValue) stock.Quantity = dto.Quantity.Value;
@@ -168,6 +170,7 @@ namespace katsuCMS_backend.Controllers
 
             return Ok(new
             {
+                stock.Product.ProductCode,
                 stock.Id,
                 stock.ProductId,
                 stock.Quantity,

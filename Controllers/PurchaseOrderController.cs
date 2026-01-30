@@ -210,7 +210,7 @@ namespace katsuCMS_backend.Controllers
 
                 await _context.PurchaseOrders.AddAsync(newPo);
                 await _context.SaveChangesAsync();
-                return Ok(new { message = "Purchase Order Created" });
+                return StatusCode(201, new{message = "Purchase Order Created Successfully"});
             }
             catch (Exception ex)
             {

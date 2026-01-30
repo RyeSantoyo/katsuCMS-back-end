@@ -31,6 +31,7 @@ namespace katsuCMS_backend.Controllers
                 .Select(a => new StockAdjustmentsDto
                 {
                     Id = a.Id,
+                    ProductCode = a.InventoryStock!.Product!.ProductCode, // updated line
                     ProductName = a.InventoryStock!.Product!.ProductName,
                     UnitName = a.InventoryStock!.Unit!.UnitName,
                     PreviousQuantity = a.PreviousQuantity,
