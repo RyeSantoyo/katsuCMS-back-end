@@ -113,9 +113,16 @@ namespace katsuCMS_backend.Controllers
         [HttpPost]
         public async Task<ActionResult<InventoryStockDto>> AddStock([FromBody] InventoryStockCreateDto dto)
         {
+
+            var product = await _context.Products
+    .FirstOrDefaultAsync(p => p.Id == dto.ProductId);
+
+            if (product == null)
+                return BadRequest("Invalid ProductId");
             var stock = new InventoryStock
             {
                 ProductId = dto.ProductId,
+                ProductCode = dto.ProductCode,
                 UnitId = dto.UnitId,
                 Quantity = dto.Quantity,
                 ReorderLevel = dto.ReorderLevel,

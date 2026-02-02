@@ -10,6 +10,8 @@ namespace katsuCMS_backend.Models.DTO.StockAdjustments
         public int InventoryStockId { get; set; }
         public string AdjustmentType { get; set; } = string.Empty;
         public decimal AdjustedQuantity { get; set; }
+        public decimal ReorderLevel { get; set; }
+        public decimal PreferredStockLevel { get; set; }
         public string Reason { get; set; } = string.Empty;
     }
 }

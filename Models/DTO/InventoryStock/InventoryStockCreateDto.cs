@@ -8,6 +8,7 @@ namespace katsuCMS_backend.Models.DTO.InventoryStock
     public class InventoryStockCreateDto
     {
         public int ProductId { get; set; }
+        public string ProductCode { get; set; } = null!;
         public int UnitId { get; set; }
         public decimal Quantity { get; set; }
         public decimal ReorderLevel { get; set; }

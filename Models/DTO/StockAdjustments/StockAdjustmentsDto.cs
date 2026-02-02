@@ -13,7 +13,9 @@ namespace katsuCMS_backend.Models.DTO.StockAdjustments
         public string UnitName { get; set; } = string.Empty;
         public decimal PreviousQuantity { get; set; }
         public decimal AdjustedQuantity { get; set; }
-        public string AdjustmentType { get; set; } = string.Empty; 
+        public string AdjustmentType { get; set; } = string.Empty;
+        public decimal ReorderLevel { get; set; }
+        public decimal PreferredStockLevel { get; set; }
         public string Reason { get; set; } = string.Empty;
         public DateTime AdjustmentDate { get; set; } = DateTime.Now;
     }

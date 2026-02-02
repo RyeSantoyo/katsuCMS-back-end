@@ -37,6 +37,8 @@ namespace katsuCMS_backend.Controllers
                     PreviousQuantity = a.PreviousQuantity,
                     AdjustedQuantity = a.AdjustedQuantity,
                     AdjustmentType = a.AdjustmentType,
+                    ReorderLevel = a.ReorderLevel,
+                    PreferredStockLevel = a.PreferredStockLevel,
                     Reason = a.Reason,
                     AdjustmentDate = a.AdjustmentDate
                 })
@@ -69,6 +71,10 @@ namespace katsuCMS_backend.Controllers
                     inventoryStock.Quantity -= dto.AdjustedQuantity;
                 else
                     return BadRequest("Invalid adjustment type. Use 'Add' or 'Deduct'.");
+
+                // Update ReorderLevel and PreferredStockLevel
+                inventoryStock.ReorderLevel = dto.ReorderLevel;
+                inventoryStock.PreferredStockLevel = dto.PreferredStockLevel;
             }
             catch (Exception ex)
             {
@@ -83,6 +89,8 @@ namespace katsuCMS_backend.Controllers
                 Product = product,
                 AdjustmentType = dto.AdjustmentType,
                 AdjustedQuantity = dto.AdjustedQuantity,
+                ReorderLevel = dto.ReorderLevel,
+                PreferredStockLevel = dto.PreferredStockLevel,
                 Reason = dto.Reason,
                 PreviousQuantity = inventoryStock.Quantity,
                 AdjustmentDate = DateTime.Now
@@ -95,7 +103,9 @@ namespace katsuCMS_backend.Controllers
             return Ok(new
             {
                 Message = "Stock adjustment recorded successfully.",
-                NewQuantity = inventoryStock.Quantity
+                // reorderLevel = inventoryStock.ReorderLevel,
+                // preferredStockLevel = inventoryStock.PreferredStockLevel,
+                // newQuantity = inventoryStock.Quantity
             });
         }
 
