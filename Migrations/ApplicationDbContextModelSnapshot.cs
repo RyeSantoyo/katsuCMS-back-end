@@ -60,7 +60,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("InventoryStocks");
+                    b.ToTable("InventoryStocks", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.Product", b =>
@@ -99,7 +99,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.ProductCategory", b =>
@@ -114,7 +114,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.ProductSupplier", b =>
@@ -132,7 +132,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("ProductSuppliers");
+                    b.ToTable("ProductSuppliers", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.PurchaseOrder", b =>
@@ -171,7 +171,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("PurchaseOrders");
+                    b.ToTable("PurchaseOrders", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.PurchaseOrderDetail", b =>
@@ -219,7 +219,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("PurchaseOrderDetails");
+                    b.ToTable("PurchaseOrderDetails", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.StockAdjustments", b =>
@@ -267,7 +267,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("StockAdjustments");
+                    b.ToTable("StockAdjustments", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.StockLogs", b =>
@@ -317,7 +317,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("StockLogs");
+                    b.ToTable("StockLogs", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.StockPullOut", b =>
@@ -340,7 +340,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasIndex("StoreId");
 
-                    b.ToTable("StockPullOuts");
+                    b.ToTable("StockPullOuts", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.StockPullOutDetail", b =>
@@ -369,7 +369,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("StockPullOutDetail");
+                    b.ToTable("StockPullOutDetail", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.Store", b =>
@@ -392,7 +392,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Stores");
+                    b.ToTable("Stores", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.Supplier", b =>
@@ -419,7 +419,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Suppliers");
+                    b.ToTable("Suppliers", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.Unit", b =>
@@ -434,7 +434,7 @@ namespace katsuCMS_backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Units");
+                    b.ToTable("Units", (string)null);
                 });
 
             modelBuilder.Entity("katsuCMS_backend.Models.InventoryStock", b =>

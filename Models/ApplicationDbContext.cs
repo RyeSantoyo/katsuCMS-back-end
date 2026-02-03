@@ -43,6 +43,10 @@ namespace katsuCMS_backend.Models
 
             modelBuilder.Entity<Product>().HasIndex(p => p.ProductCode).IsUnique();
 
+            // modelBuilder.Entity<InventoryStock>()
+            //     .HasIndex(s=> new{s.ProductId, s.SupplierId})
+            //     .IsUnique();
+
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Unit)
                 .WithMany(u => u.Products)
