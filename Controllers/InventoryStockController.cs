@@ -157,21 +157,36 @@ namespace katsuCMS_backend.Controllers
             return CreatedAtAction(nameof(GetCurrentStock), new { id = stock.Id }, result);
         }
 
-        [HttpPut("UpdateReorderLevel/{id}")]
-        public async Task<ActionResult> UpdateReorderLevel(int id, [FromBody] InventoryStockUpdateDto dto)
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> UpdateStock(int id, [FromBody] InventoryStockUpdateDto dto)
         {
             var stock = await _context.InventoryStocks
             .Include(s => s.Product)
             .FirstOrDefaultAsync(s => s.Id == id);
-            if (stock == null) return NotFound();
 
-            if (dto.Quantity.HasValue) stock.Quantity = dto.Quantity.Value;
+            if (stock == null)
+                return NotFound();
 
-            if (dto.ReorderLevel.HasValue) stock.ReorderLevel = dto.ReorderLevel.Value;
+            if (dto.Quantity.HasValue && dto.Quantity.Value <= 0) return BadRequest("Quantity cannot be negative.");
 
-            if (dto.PreferredStockLevel.HasValue) stock.PreferredStockLevel = dto.PreferredStockLevel.Value;
+            if(dto.PreferredStockLevel.HasValue && dto.PreferredStockLevel.Value < 0) return BadRequest("Preferred Stock Level must be greater than 0.");
 
-            stock.LastUpdated = DateTime.Now;
+            if(dto.ReorderLevel.HasValue && dto.ReorderLevel.Value < 0) return BadRequest("Reorder Level must be greater than 0.");
+
+            var newReorderLevel = dto.ReorderLevel ?? stock.ReorderLevel;
+            var newPreferredStockLevel = dto.PreferredStockLevel ?? stock.PreferredStockLevel;
+
+            if(newReorderLevel > newPreferredStockLevel)
+                return BadRequest("Reorder Level cannot be greater than Preferred Stock Level.");
+
+            if(dto.Quantity.HasValue)
+                stock.Quantity = dto.Quantity.Value;
+            if(dto.ReorderLevel.HasValue)
+                stock.ReorderLevel = dto.ReorderLevel.Value;
+            if(dto.PreferredStockLevel.HasValue)
+                stock.PreferredStockLevel = dto.PreferredStockLevel.Value;
+
+            stock.LastUpdated = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
 
@@ -183,7 +198,8 @@ namespace katsuCMS_backend.Controllers
                 stock.Quantity,
                 stock.ReorderLevel,
                 stock.LastUpdated,
-                stock.PreferredStockLevel
+                stock.PreferredStockLevel,
+                isLowstock = stock.Quantity <= newReorderLevel
             });
         }
 
