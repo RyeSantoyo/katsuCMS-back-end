@@ -15,7 +15,6 @@ namespace katsuCMS_backend.Models
 
         [Required]
         public int ProductId { get; set; }
-        public string ProductCode { get; set; } = null!;
         public Product Product { get; set; } = null!;
 
         [Required]

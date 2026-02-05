@@ -178,6 +178,7 @@ namespace katsuCMS_backend.Controllers
                             ProductId = d.ProductId,
                             Quantity = d.Quantity,
                             UnitId = d.UnitId,
+                           // ProductCode = d.ProductId.ToString(),
                             // ReorderLevel = 10,
                             // PreferredStockLevel = 50
                         },
@@ -284,7 +285,7 @@ namespace katsuCMS_backend.Controllers
         }
         #endregion
         #region Delete
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePo(int id)
         {
             var po = _context.PurchaseOrders
