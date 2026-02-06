@@ -201,7 +201,7 @@ namespace katsuCMS_backend.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteStock(int id)
         {
-            var stock = await _context.InventoryStocks.FindAsync(id);
+            var stock = await _context.InventoryStocks.Include(s => s.Product).FirstOrDefaultAsync(s => s.Id == id);
 
             if (stock == null) return NoContent();
 
