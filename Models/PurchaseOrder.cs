@@ -34,7 +34,7 @@ namespace katsuCMS_backend.Models
     {
         Pending,
         Approved,
-        Received,
+        Completed,
         Cancelled
     }
 }

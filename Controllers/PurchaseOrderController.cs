@@ -178,7 +178,7 @@ namespace katsuCMS_backend.Controllers
                             ProductId = d.ProductId,
                             Quantity = d.Quantity,
                             UnitId = d.UnitId,
-                           // ProductCode = d.ProductId.ToString(),
+                            // ProductCode = d.ProductId.ToString(),
                             // ReorderLevel = 10,
                             // PreferredStockLevel = 50
                         },
@@ -211,7 +211,7 @@ namespace katsuCMS_backend.Controllers
 
                 await _context.PurchaseOrders.AddAsync(newPo);
                 await _context.SaveChangesAsync();
-                return StatusCode(201, new{message = "Purchase Order Created Successfully"});
+                return StatusCode(201, new { message = "Purchase Order Created Successfully" });
             }
             catch (Exception ex)
             {
@@ -228,12 +228,13 @@ namespace katsuCMS_backend.Controllers
             return current switch
             {
                 PurchaseOrderStatus.Pending => next == PurchaseOrderStatus.Approved || next == PurchaseOrderStatus.Cancelled,
-                PurchaseOrderStatus.Approved => next == PurchaseOrderStatus.Received || next == PurchaseOrderStatus.Cancelled,
-                PurchaseOrderStatus.Received => next == PurchaseOrderStatus.Received,
+                PurchaseOrderStatus.Approved => next == PurchaseOrderStatus.Completed || next == PurchaseOrderStatus.Cancelled,
+                PurchaseOrderStatus.Completed => next == PurchaseOrderStatus.Completed,
                 _ => false
             };
 
         }
+        
         [HttpPatch("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] PurchaseOrderUpdateDto dto)
         {
@@ -246,13 +247,15 @@ namespace katsuCMS_backend.Controllers
 
             if (po == null) return NotFound(new { message = "Purchase Order not found." });
 
-            if (Enum.TryParse<PurchaseOrderStatus>(dto.Status.ToString() ?? string.Empty, true, out var newStatus))
+            if (!Enum.TryParse<PurchaseOrderStatus>(dto.Status.ToString() ?? string.Empty, true, out var newStatus))
                 return BadRequest(new { message = "Invalid status value." });
 
             if (!IsValid(po.Status, newStatus))
                 return BadRequest(new { message = $"Cannot change status from {po.Status} to {newStatus}" });
 
-            if (newStatus == PurchaseOrderStatus.Received)
+            po.Status = newStatus;
+
+            if (newStatus == PurchaseOrderStatus.Completed)
             {
                 foreach (var detail in po.PurchaseOrderDetails)
                 {
