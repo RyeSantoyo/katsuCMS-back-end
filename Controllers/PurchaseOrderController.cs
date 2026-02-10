@@ -173,15 +173,6 @@ namespace katsuCMS_backend.Controllers
                     TotalAmount = pDto.OrderDetails.Sum(d => d.Quantity * d.UnitPrice),
                     PurchaseOrderDetails = pDto.OrderDetails.Select(d => new PurchaseOrderDetail
                     {
-                        InventoryStock = new InventoryStock
-                        {
-                            ProductId = d.ProductId,
-                            Quantity = d.Quantity,
-                            UnitId = d.UnitId,
-                            // ProductCode = d.ProductId.ToString(),
-                            // ReorderLevel = 10,
-                            // PreferredStockLevel = 50
-                        },
                         PurchaseOrderNumber = poNumber,
                         ProductName = d.ProductName,
                         ProductId = d.ProductId,
@@ -234,7 +225,7 @@ namespace katsuCMS_backend.Controllers
             };
 
         }
-        
+
         [HttpPatch("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] PurchaseOrderUpdateDto dto)
         {
@@ -257,30 +248,53 @@ namespace katsuCMS_backend.Controllers
 
             if (newStatus == PurchaseOrderStatus.Completed)
             {
-                foreach (var detail in po.PurchaseOrderDetails)
-                {
-                    var log = new StockLogs
-                    {
-                        ProductId = detail.ProductId,
-                        QuantityChange = (int)detail.Quantity,
-                        UnitPrice = detail.UnitPrice,
-                        Reason = "Stock Received",
-                        DateLogged = DateTime.Now,
-                    };
-                    await _context.StockLogs.AddAsync(log);
+                // if (po.Status == PurchaseOrderStatus.Completed)
+                //     return BadRequest(new { message = "PO already completed." });
 
-                    var stock = await _context.InventoryStocks
-                        .FirstOrDefaultAsync(s => s.ProductId == detail.ProductId && s.UnitId == detail.UnitId);
-                    if (stock != null) stock.Quantity += detail.Quantity;
-                    else
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    foreach (var detail in po.PurchaseOrderDetails)
                     {
-                        _context.InventoryStocks.Add(new InventoryStock
+                        _context.StockLogs.Add(new StockLogs
                         {
                             ProductId = detail.ProductId,
-                            UnitId = detail.UnitId,
-                            Quantity = detail.Quantity
+                            QuantityChange = (int)detail.Quantity,
+                            UnitPrice = detail.UnitPrice,
+                            Reason = "Stock Received",
+                            DateLogged = DateTime.UtcNow,
                         });
+
+
+                        var stock = await _context.InventoryStocks
+                            .FirstOrDefaultAsync
+                            (s => s.ProductId == detail.ProductId
+                            && s.UnitId == detail.UnitId);
+
+                        if (stock == null)
+                        {
+                            _context.InventoryStocks.Add(new InventoryStock
+                            {
+                                ProductId = detail.ProductId,
+                                UnitId = detail.UnitId,
+                                Quantity = detail.Quantity
+                            });
+                        }
+                        else
+                        {
+                            stock.Quantity += detail.Quantity;
+                        }
                     }
+                    po.Status = newStatus;
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    Console.WriteLine(ex.ToString());
+                    return StatusCode(500, new { message = "Error Occured while updating stock", error = ex.Message });
                 }
             }
             await _context.SaveChangesAsync();

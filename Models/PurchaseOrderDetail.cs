@@ -15,7 +15,7 @@ namespace katsuCMS_backend.Models
         [Required]
         public string PurchaseOrderNumber { get; set; } = string.Empty;
         public PurchaseOrder PurchaseOrder { get; set; } = null!;
-        public InventoryStock InventoryStock {get;set;} = null!;
+        // public InventoryStock InventoryStock {get;set;} = null!;
         [Required]
         public int ProductId { get; set; }
         public string ProductName { get; set; } = string.Empty;
