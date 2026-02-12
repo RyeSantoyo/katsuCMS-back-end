@@ -108,7 +108,5 @@ namespace katsuCMS_backend.Controllers
                 // newQuantity = inventoryStock.Quantity
             });
         }
-
-
     }
 }

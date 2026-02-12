@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using katsuCMS_backend.Models;
 using katsuCMS_backend.Models.DTO.PurchaseOrder;
+using katsuCMS_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 namespace katsuCMS_backend.Controllers
@@ -14,52 +15,60 @@ namespace katsuCMS_backend.Controllers
     public class PurchaseOrderController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        public PurchaseOrderController(ApplicationDbContext context)
+        private readonly IPurchaseOrderService _poService;
+        public PurchaseOrderController(ApplicationDbContext context, IPurchaseOrderService poService)
         {
             _context = context;
+            _poService = poService;
         }
 
         #region Get
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PurchaseOrder>>> GetAll()
         {
-            var pos = await _context.PurchaseOrders
-                .Include(po => po.Supplier)
-                .Include(po => po.PurchaseOrderDetails)
-                    .ThenInclude(d => d.Product)
-                .Select(po => new
-                {
-                    po.Id,
-                    po.PONumber,
-                    po.Supplier.SupplierName,
-                    Productname = string.Join(", ", po.PurchaseOrderDetails.Select(od => od.Product.ProductName)),
-                    po.OrderDate,
-                    Status = po.Status.ToString(),
-                    po.TotalAmount,
-                    Quantity = po.PurchaseOrderDetails.Sum(d => d.Quantity),
-                    ItemsCount = po.PurchaseOrderDetails.Count
-                }).AsNoTracking().ToListAsync();
-            Console.WriteLine($"Retrieved PO count: {pos.Count}");
+            var pos = await _poService.GetAllPurchaseOrdersAsync();
             return Ok(new { message = "Purchase Orders retrieved successfully", data = pos });
+            // var pos = await _context.PurchaseOrders
+            //     .Include(po => po.Supplier)
+            //     .Include(po => po.PurchaseOrderDetails)
+            //         .ThenInclude(d => d.Product)
+            //     .Select(po => new
+            //     {
+            //         po.Id,
+            //         po.PONumber,
+            //         po.Supplier.SupplierName,
+            //         Productname = string.Join(", ", po.PurchaseOrderDetails.Select(od => od.Product.ProductName)),
+            //         po.OrderDate,
+            //         Status = po.Status.ToString(),
+            //         po.TotalAmount,
+            //         Quantity = po.PurchaseOrderDetails.Sum(d => d.Quantity),
+            //         ItemsCount = po.PurchaseOrderDetails.Count
+            //     }).AsNoTracking().ToListAsync();
+            // Console.WriteLine($"Retrieved PO count: {pos.Count}");
+            // return Ok(new { message = "Purchase Orders retrieved successfully", data = pos });
         }
 
         [HttpGet("supplier")]
 
         public async Task<ActionResult> GetSuppliers()
         {
-            var suppliers = await _context.Suppliers
-                                        .Select(s => new { s.Id, s.SupplierName, s.SupplierCode })
-                                        .AsNoTracking()
-                                        .ToListAsync();
+            var suppliers = await _poService.GetSupplierAsync();
             return Ok(new { message = "Suppliers retrieved successfully", data = suppliers });
+            // var suppliers = await _context.Suppliers
+            //                             .Select(s => new { s.Id, s.SupplierName, s.SupplierCode })
+            //                             .AsNoTracking()
+            //                             .ToListAsync();
+            // return Ok(new { message = "Suppliers retrieved successfully", data = suppliers });
         }
         [HttpGet("products")]
         public async Task<ActionResult> GetProducts()
         {
-            var products = await _context.Products.Select(p => p.ProductName)
-                                        .AsNoTracking()
-                                        .ToListAsync();
+            var products = await _poService.GetProductsAsync();
             return Ok(new { message = "Products retrieved successfully", data = products });
+            // var products = await _context.Products.Select(p => p.ProductName)
+            //                             .AsNoTracking()
+            //                             .ToListAsync();
+            // return Ok(new { message = "Products retrieved successfully", data = products });
         }
         [HttpGet("productsupplier")]
         public async Task<ActionResult> GetProductBySupplier(int id)
@@ -263,6 +272,7 @@ namespace katsuCMS_backend.Controllers
                             UnitPrice = detail.UnitPrice,
                             Reason = "Stock Received",
                             DateLogged = DateTime.UtcNow,
+                            Receiver = "Store Admin",
                         });
 
 
@@ -297,7 +307,7 @@ namespace katsuCMS_backend.Controllers
                     return StatusCode(500, new { message = "Error Occured while updating stock", error = ex.Message });
                 }
             }
-            await _context.SaveChangesAsync();
+            
             return Ok(new { message = "Status updated successfully" });
         }
         #endregion

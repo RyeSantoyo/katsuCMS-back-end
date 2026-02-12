@@ -21,7 +21,7 @@ namespace katsuCMS_backend.Controllers
         {
             _context = context;
         }
-
+#region Get Stock
         [HttpGet]
         public async Task<ActionResult<IEnumerable<InventoryStockDto>>> GetCurrentStock()
         {
@@ -109,7 +109,8 @@ namespace katsuCMS_backend.Controllers
 
             return Ok(result);
         }
-
+        #endregion
+#region Add Stock
         [HttpPost]
         public async Task<ActionResult<InventoryStockDto>> AddStock([FromBody] InventoryStockCreateDto dto)
         {
@@ -151,7 +152,8 @@ namespace katsuCMS_backend.Controllers
 
             return CreatedAtAction(nameof(GetCurrentStock), new { id = stock.Id }, result);
         }
-
+        #endregion
+#region Update Stock
         [HttpPatch("{id}")]
         public async Task<ActionResult> UpdateStock(int id, [FromBody] InventoryStockUpdateDto dto)
         {
@@ -197,7 +199,8 @@ namespace katsuCMS_backend.Controllers
                 isLowstock = stock.Quantity <= newReorderLevel
             });
         }
-
+        #endregion
+#region Delete Stock
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteStock(int id)
         {
@@ -210,5 +213,6 @@ namespace katsuCMS_backend.Controllers
 
             return Ok(new { message = $"{stock.Product.ProductName} have been removed" });
         }
+        #endregion
     }
 }

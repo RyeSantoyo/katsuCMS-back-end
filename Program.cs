@@ -1,4 +1,6 @@
 using katsuCMS_backend.Models;
+using katsuCMS_backend.Services.Interfaces;
+using katsuCMS_backend.Services.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 
@@ -12,6 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddDbContext<ApplicationDbContext>(ops => 
 ops.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
 
 // builder.Services.AddDbContext<ApplicationDbContext>(ops=> 
 // ops.UseSqlServer(builder.Configuration.GetConnectionString("DefCon")));

@@ -18,7 +18,7 @@ namespace katsuCMS_backend.Controllers
         {
             _context = context;
         }
-
+#region Get Categories
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PCategoryDto>>> GetCategories()
         {
@@ -56,7 +56,8 @@ namespace katsuCMS_backend.Controllers
             }
             return Ok(category);
         }
-
+        #endregion
+#region Create Category
         [HttpPost]
 
         public async Task<ActionResult<PCategoryDto>> CreateCategory (PCategoryCreateDto dto)
@@ -80,7 +81,8 @@ namespace katsuCMS_backend.Controllers
 
             return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, result);
         }
-
+#endregion
+#region Update Category
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, PCategoryCreateDto dto)
         {
@@ -95,6 +97,26 @@ namespace katsuCMS_backend.Controllers
 
             return Ok( new { message = $"Category {id} updated successfully." });
         }
+            #endregion   
+#region Delete Category
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null)
+            {
+                return NotFound(new { message = "Category not found." });
+            }
+
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"Category {id} deleted successfully." });
+        }
+        #endregion
+
     }
+
+
 
 }

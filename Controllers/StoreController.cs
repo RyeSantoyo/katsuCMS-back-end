@@ -93,5 +93,20 @@ namespace katsuCMS_backend.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteStore(int id)
+        {
+            var store = await _context.Stores.FindAsync(id);
+            if (store == null)
+            {
+                return NotFound(new { message = "Store not found." });
+            }
+
+            _context.Stores.Remove(store);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"Store {id} deleted successfully." });
+        }
     }
 }
