@@ -18,50 +18,22 @@ namespace katsuCMS_backend.Services.Services
         {
             _context = context;
         }
-        private bool IsValid(PurchaseOrderStatus current, PurchaseOrderStatus next)
+
+
+        public async Task<(bool Success, string Message, string poNumber)> CreatePOAsync(PurchaseOrderDto pDto)
         {
-            return current switch
-            {
-                PurchaseOrderStatus.Pending => next == PurchaseOrderStatus.Approved || next == PurchaseOrderStatus.Cancelled,
-                PurchaseOrderStatus.Approved => next == PurchaseOrderStatus.Completed || next == PurchaseOrderStatus.Cancelled,
-                PurchaseOrderStatus.Completed => next == PurchaseOrderStatus.Completed,
-                _ => false
-            };
-
-        }
-                public async Task<string> GeneratePONumberAsync()
-        {
-            var lastPo = await _context.PurchaseOrders
-                .OrderByDescending(po => po.Id)
-                .FirstOrDefaultAsync();
-
-            int lastNumber = 0;
-
-            if (lastPo != null)
-            {
-                var parts = lastPo.PONumber.Split('-');
-                if (parts.Length == 2 && int.TryParse(parts[1], out var num))
-                {
-                    lastNumber = num;
-                }
-            }
-
-            return $"PO-{(lastNumber + 1):D4}";
-        }
-        public async Task<(bool Success, string Message)> CreatePOAsync(PurchaseOrderDto pDto)
-        {
-            if(pDto == null)
-                return (false, "Invalid Purchase Order data.");
+            if (pDto == null)
+                return (false, "Invalid Purchase Order data.", "");
             var supplierExists = await _context.Suppliers.AnyAsync(s => s.Id == pDto.SupplierId);
             // var supplierExists = await _context.Suppliers.AnyAsync(s => s.Id == pDto.SupplierId && s.SupplierCode == pDto.SupplierCode);
             if (!supplierExists)
-                return (false, "Supplier does not exist.");
+                return (false, "Supplier does not exist.", "");
 
             Console.WriteLine($"Received JSON: {JsonSerializer.Serialize(pDto)}");
 
             if (pDto.OrderDetails == null || pDto.OrderDetails.Count == 0)
             {
-                return (false, "No Order detail available");
+                return (false, "No Order detail available", "");
             }
             try
             {
@@ -90,26 +62,26 @@ namespace katsuCMS_backend.Services.Services
                 {
                     var productExists = await _context.Products.AnyAsync(p => p.Id == item.ProductId);
                     if (!productExists)
-                        return (false, $"Product with ID {item.ProductId} does not exist.");
+                        return (false, $"Product with ID {item.ProductId} does not exist.", "");
 
                     var unitExists = await _context.Units.AnyAsync(u => u.Id == item.UnitId);
                     if (!unitExists)
-                        return (false, $"Unit with ID {item.UnitId} does not exist.");
+                        return (false, $"Unit with ID {item.UnitId} does not exist.", "");
 
                     var validSupplierProduct = await _context.ProductSuppliers
                                                 .AnyAsync(ps => ps.ProductId == item.ProductId && ps.SupplierId == pDto.SupplierId);
                     if (!validSupplierProduct)
-                        return (false, $"Product {item.ProductId} is not supplied by this Supplier.");
+                        return (false, $"Product {item.ProductId} is not supplied by this Supplier.", "");
                 }
 
                 await _context.PurchaseOrders.AddAsync(newPo);
                 await _context.SaveChangesAsync();
-                return (true, "Purchase Order Created Successfully");
+                return (true, "Purchase Order Created Successfully", poNumber);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return (false, $"Error Occured at line 261: {ex.Message}");
+                return (false, $"Error Occured at line 261: {ex.Message}", "");
 
             }
         }
@@ -143,9 +115,21 @@ namespace katsuCMS_backend.Services.Services
             return pos;
         }
 
-        public async Task<object?> GetByIdAsync(int id)
+
+        public async Task<IEnumerable<object>> GetProductsAsync()
         {
-            Console.WriteLine($"Fetching PO with ID {id}");
+            var products = await _context.Products.Select(p => new { p.Id, p.ProductName }).AsNoTracking().ToListAsync();
+            return products;
+        }
+
+        public async Task<IEnumerable<object>> GetSupplierAsync()
+        {
+            var suppliers = await _context.Suppliers.Select(s => new { s.Id, s.SupplierName }).AsNoTracking().ToListAsync();
+            return suppliers;
+        }
+
+        public async Task<IEnumerable<object>> GetPOByIdAsync(int id)
+        {
             var po = await _context.PurchaseOrders
                                     .Include(po => po.Supplier)
                                     .Include(po => po.PurchaseOrderDetails)
@@ -156,7 +140,7 @@ namespace katsuCMS_backend.Services.Services
 
             if (po == null)
             {
-                return null;
+                return Enumerable.Empty<object>();
             }
 
             var poDto = new
@@ -177,22 +161,8 @@ namespace katsuCMS_backend.Services.Services
                     d.TotalPrice
                 }).ToList()
             };
-            Console.WriteLine("Purchase Order retrieved successfully" + poDto);
-            return poDto;
+            return new[] { poDto };
         }
-
-        public async Task<IEnumerable<object>> GetProductsAsync()
-        {
-            var products = await _context.Products.Select(p => new { p.Id, p.ProductName }).AsNoTracking().ToListAsync();
-            return products;
-        }
-
-        public async Task<IEnumerable<object>> GetSupplierAsync()
-        {
-            var suppliers = await _context.Suppliers.Select(s => new { s.Id, s.SupplierName }).AsNoTracking().ToListAsync();
-            return suppliers;
-        }
-
         public async Task<IEnumerable<object>> GetSupplierByIdAsync(int id)
         {
             var productSuppliers = await _context.ProductSuppliers
@@ -208,9 +178,98 @@ namespace katsuCMS_backend.Services.Services
             return productSuppliers;
         }
 
-        public Task<(bool Success, string Message)> UpdatePOAsync(int id, PurchaseOrderStatus newStatus)
+        private bool IsValid(PurchaseOrderStatus current, PurchaseOrderStatus next)
         {
-            throw new NotImplementedException();
+            return current switch
+            {
+                PurchaseOrderStatus.Pending => next == PurchaseOrderStatus.Approved || next == PurchaseOrderStatus.Cancelled,
+                PurchaseOrderStatus.Approved => next == PurchaseOrderStatus.Completed || next == PurchaseOrderStatus.Cancelled,
+                PurchaseOrderStatus.Completed => next == PurchaseOrderStatus.Completed,
+                _ => false
+            };
+
+        }
+        public async Task<string> GeneratePONumberAsync()
+        {
+            var lastPo = await _context.PurchaseOrders
+                .OrderByDescending(po => po.Id)
+                .FirstOrDefaultAsync();
+
+            int lastNumber = 0;
+
+            if (lastPo != null)
+            {
+                var parts = lastPo.PONumber.Split('-');
+                if (parts.Length == 2 && int.TryParse(parts[1], out var num))
+                {
+                    lastNumber = num;
+                }
+            }
+
+            return $"PO-{(lastNumber + 1):D4}";
+        }
+
+
+        public async Task<(bool Success, string Message)> UpdatePOAsync(int id, PurchaseOrderStatus newStatus)
+        {
+            var po = await _context.PurchaseOrders
+                       .Include(p => p.PurchaseOrderDetails)
+                       .ThenInclude(d => d.Product)
+                       .FirstOrDefaultAsync(po => po.Id == id);
+
+            if (po == null)
+                return (false, "Purchase Order not found.");
+
+            if (!IsValid(po.Status, newStatus))
+                return (false, $"Cannot change status from {po.Status} to {newStatus}");
+
+            po.Status = newStatus;
+
+            if (newStatus == PurchaseOrderStatus.Completed)
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    foreach (var detail in po.PurchaseOrderDetails)
+                    {
+                        _context.StockLogs.Add(new StockLogs
+                        {
+                            ProductId = detail.ProductId,
+                            QuantityChange = (int)detail.Quantity,
+                            UnitPrice = detail.UnitPrice,
+                            Reason = "Stock Received",
+                            DateLogged = DateTime.UtcNow,
+                            Receiver = "Store Admin",
+                        });
+
+                        var stock = await _context.InventoryStocks
+                            .FirstOrDefaultAsync(s => s.ProductId == detail.ProductId && s.UnitId == detail.UnitId);
+
+                        if (stock == null)
+                        {
+                            _context.InventoryStocks.Add(new InventoryStock
+                            {
+                                ProductId = detail.ProductId,
+                                UnitId = detail.UnitId,
+                                Quantity = detail.Quantity
+                            });
+                        }
+                        else
+                        {
+                            stock.Quantity += detail.Quantity;
+                        }
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return (false, $"Error updating stock: {ex.Message}");
+                }
+            }
+            return (true, "Status updated successfully");
         }
     }
 }
