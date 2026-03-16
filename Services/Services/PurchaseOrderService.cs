@@ -189,6 +189,7 @@ namespace katsuCMS_backend.Services.Services
             };
 
         }
+        
         public async Task<string> GeneratePONumberAsync()
         {
             var lastPo = await _context.PurchaseOrders
@@ -206,7 +207,7 @@ namespace katsuCMS_backend.Services.Services
                 }
             }
 
-            return $"PO-{(lastNumber + 1):D4}";
+            return $"PO-{lastNumber + 1:D4}";
         }
 
 

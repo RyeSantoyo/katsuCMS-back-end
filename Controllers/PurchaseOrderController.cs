@@ -235,17 +235,17 @@ namespace katsuCMS_backend.Controllers
         #endregion
         #region Patch
 
-        private bool IsValid(PurchaseOrderStatus current, PurchaseOrderStatus next)
-        {
-            return current switch
-            {
-                PurchaseOrderStatus.Pending => next == PurchaseOrderStatus.Approved || next == PurchaseOrderStatus.Cancelled,
-                PurchaseOrderStatus.Approved => next == PurchaseOrderStatus.Completed || next == PurchaseOrderStatus.Cancelled,
-                PurchaseOrderStatus.Completed => next == PurchaseOrderStatus.Completed,
-                _ => false
-            };
+        // private bool IsValid(PurchaseOrderStatus current, PurchaseOrderStatus next)
+        // {
+        //     return current switch
+        //     {
+        //         PurchaseOrderStatus.Pending => next == PurchaseOrderStatus.Approved || next == PurchaseOrderStatus.Cancelled,
+        //         PurchaseOrderStatus.Approved => next == PurchaseOrderStatus.Completed || next == PurchaseOrderStatus.Cancelled,
+        //         PurchaseOrderStatus.Completed => next == PurchaseOrderStatus.Completed,
+        //         _ => false
+        //     };
 
-        }
+        // }
 
         [HttpPatch("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] PurchaseOrderUpdateDto dto)
