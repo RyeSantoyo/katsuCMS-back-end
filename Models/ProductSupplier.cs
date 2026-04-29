@@ -10,6 +10,7 @@ namespace katsuCMS_backend.Models
     {
         public int Id { get; set; }
         public int ProductId { get; set; }
+        public string ProductName { get; set; } = string.Empty;
         public int SupplierId { get; set; }
 
         [JsonIgnore] // Prevent serialization issues

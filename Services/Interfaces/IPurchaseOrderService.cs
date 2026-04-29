@@ -10,6 +10,7 @@ namespace katsuCMS_backend.Services.Interfaces
     public interface IPurchaseOrderService
     {
         Task<IEnumerable<object>> GetAllPurchaseOrdersAsync();
+        Task<IEnumerable<object>> GetProductSuppliersAsync(int id);
         Task<IEnumerable<object>>GetPOByIdAsync(int id);
         Task<IEnumerable<object>>GetSupplierAsync();
         Task<IEnumerable<object>>GetProductsAsync();

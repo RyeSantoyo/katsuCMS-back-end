@@ -1,3 +1,6 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "csharp-dev-tools.roslyn.projectOrSolutionFiles": [
+        "c:\\Users\\John\\CMS\\katsuCMS-backend\\katsuCMS-backend.sln"
+    ]
 }
