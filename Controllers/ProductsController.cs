@@ -137,7 +137,9 @@ namespace katsuCMS_backend.Controllers
                 Description = dto.Description,
                 ProductSuppliers = dto.SupplierIds.Select(supplierId => new ProductSupplier
                 {
-                    SupplierId = supplierId
+                    SupplierId = supplierId,
+                    ProductName = dto.ProductName,
+                    
                 }).ToList()
             };
             _context.Products.Add(product);
@@ -188,7 +190,8 @@ namespace katsuCMS_backend.Controllers
                     .Select(supplierId => new ProductSupplier
                     {
                         SupplierId = supplierId,
-                        ProductId = product.Id
+                        ProductId = product.Id,
+                        ProductName = dto.ProductName
                     }).ToList();
             }
 

@@ -189,7 +189,7 @@ namespace katsuCMS_backend.Services.Services
             };
 
         }
-        
+
         public async Task<string> GeneratePONumberAsync()
         {
             var lastPo = await _context.PurchaseOrders
@@ -271,6 +271,21 @@ namespace katsuCMS_backend.Services.Services
                 }
             }
             return (true, "Status updated successfully");
+        }
+
+        public async Task<IEnumerable<object>> GetProductSuppliersAsync(int id)
+        {
+            var productSuppliers = await _context.ProductSuppliers
+                    .Where(ps => ps.SupplierId == id)
+                    .Select(ps => new
+                    {
+                        ps.ProductId,
+                        ps.Product.ProductName,
+                        ps.Product.Unit.UnitName,
+                        ps.Product.UnitId,
+                        ps.Product.Price
+                    }).AsNoTracking().ToListAsync();
+            return productSuppliers;
         }
     }
 }
